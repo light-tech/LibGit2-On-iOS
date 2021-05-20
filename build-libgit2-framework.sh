@@ -129,5 +129,5 @@ function build_pcre_xcframework() {
 	tar -cJf PCRE.xcframework.tar.xz PCRE.xcframework
 }
 
-build_libgit2_xcframework maccatalyst
-build_pcre_xcframework maccatalyst
+build_libgit2_xcframework iphoneos iphonesimulator maccatalyst
+build_pcre_xcframework iphoneos iphonesimulator maccatalyst
