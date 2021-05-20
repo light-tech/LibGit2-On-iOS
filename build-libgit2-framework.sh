@@ -13,6 +13,7 @@ export PATH=$PATH:$REPO_ROOT/tools/bin
 ### providing basic/common CMake options will be set.
 ###
 function setup_variables() {
+	echo "Setup variables " $1
 	PLATFORM=$1
 
 	CMAKE_ARGS=(-DBUILD_SHARED_LIBS=NO -DCMAKE_BUILD_TYPE=Release)
@@ -20,9 +21,11 @@ function setup_variables() {
 	case $PLATFORM in
 		"iphoneos")
 			SYSROOT=`xcodebuild -version -sdk iphoneos Path`
+			echo $SYSROOT
 			CMAKE_ARGS+=("-DCMAKE_C_COMPILER_WORKS=ON" "-DCMAKE_CXX_COMPILER_WORKS=ON" "-DCMAKE_OSX_ARCHITECTURES=arm64" "-DCMAKE_OSX_SYSROOT=$SYSROOT");;
 		"iphonesimulator")
 			SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
+			echo $SYSROOT
 			CMAKE_ARGS+=("-DCMAKE_OSX_SYSROOT=$SYSROOT");;
 		"maccatalyst")
 			# No need to set up SYSROOT as CMake should find MacOS SDK automatically
@@ -31,6 +34,7 @@ function setup_variables() {
 			echo "Unsupported or missing platform!"
 			echo "Usage: setup_variables [iphoneos|iphonesimulator|maccatalyst]";;
 	esac
+	echo "Done setup variables!"
 }
 
 ### Build libgit2 for a single platform (given as the first and only argument)
@@ -96,6 +100,8 @@ function build_pcre() {
 		-DPCRE_BUILD_TESTS=NO \
 		-DPCRE_SUPPORT_LIBBZ2=NO)
 
+	echo ${CMAKE_ARGS[@]}
+
 	case $PLATFORM in
 		"iphoneos"|"iphonesimulator")
 			cmake ${CMAKE_ARGS[@]} ..;;
@@ -103,9 +109,10 @@ function build_pcre() {
 			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target x86_64-apple-ios14.1-macabi" ..;;
 	esac
 
-	cd ..
-	cmake -L
-	cd build
+	#cd ..
+	#cmake -L
+	#cd build
+	echo `pwd`
 
 	cmake --build . --target install
 }
@@ -128,5 +135,6 @@ function build_pcre_xcframework() {
 	tar -cJf PCRE.xcframework.tar.xz PCRE.xcframework
 }
 
-#build_libgit2_xcframework iphoneos #iphonesimulator maccatalyst
-build_pcre_xcframework iphoneos #iphonesimulator maccatalyst
+build_pcre iphoneos
+#build_libgit2_xcframework iphoneos iphonesimulator maccatalyst
+#build_pcre_xcframework iphoneos iphonesimulator maccatalyst

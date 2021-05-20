@@ -36,4 +36,4 @@ jobs:
   - publish: $(System.DefaultWorkingDirectory)
     artifact: AllFiles
     displayName: 'Publish all files for inspection'
-    enabled: true
+    enabled: false
