@@ -14,3 +14,9 @@ cmake -DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install \
 #cmake -L
 
 cmake --build . --target install
+
+cd $REPO_ROOT
+FRAMEWORKS_ARGS=()
+FRAMEWORKS_ARGS+=("-library" "install/lib/libgit2.a" "-headers" "install/include")
+xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output Clibgit2.xcframework
+tar -cJf Clibgit2.xcframework.tar.xz Clibgit2.xcframework

@@ -23,6 +23,11 @@ jobs:
     continueOnError: false
     enabled: true
 
+  - publish: $(System.DefaultWorkingDirectory)/Clibgit2.xcframework.tar.xz
+    artifact: Clibgit2
+    displayName: 'Publish Clibgit2 XCFramework'
+    enabled: true
+
   - publish: $(System.DefaultWorkingDirectory)
     artifact: AllFiles
     displayName: 'Publish all files for inspection'
