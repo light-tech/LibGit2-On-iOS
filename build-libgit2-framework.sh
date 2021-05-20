@@ -61,10 +61,21 @@ function build_libgit2() {
 	cmake --build . --target install
 }
 
+### Build Clibgit2 xcframework
+### Usage: build_libgit2_xcframework LIST_OF_PLATFORMS
+### See @setup_variables for the list of available platform names
+### Example: build_libgit2_xcframework iphoneos maccatalyst
+###
 function build_libgit2_xcframework() {
-	cd $REPO_ROOT
+	PLATFORMS=( "$@" )
 	FRAMEWORKS_ARGS=()
-	FRAMEWORKS_ARGS+=("-library" "install/libgit2/lib/libgit2.a" "-headers" "install/libgit2/include")
+
+	for p in ${PLATFORMS[@]}; do
+		build_libgit2 $p
+		FRAMEWORKS_ARGS+=("-library" "install/libgit2-$p/lib/libgit2.a" "-headers" "install/libgit2-$p/include")
+	done
+
+	cd $REPO_ROOT
 	xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output Clibgit2.xcframework
 	tar -cJf Clibgit2.xcframework.tar.xz Clibgit2.xcframework
 }
@@ -100,13 +111,23 @@ function build_pcre() {
 	cmake --build . --target install
 }
 
-function build_pcre_framework() {
-	cd $REPO_ROOT
+### Build PCRE xcframework
+### Usage: build_pcre_framework LIST_OF_PLATFORMS
+### See @setup_variables for the list of available platform names
+###
+function build_pcre_xcframework() {
+	PLATFORMS=( "$@" )
 	FRAMEWORKS_ARGS=()
-	FRAMEWORKS_ARGS+=("-library" "install/pcre/lib/libpcre.a" "-headers" "install/pcre/include")
-	xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output LibPCRE.xcframework
-	tar -cJf LibPCRE.xcframework.tar.xz LibPCRE.xcframework
+
+	for p in ${PLATFORMS[@]}; do
+		build_pcre $p
+		FRAMEWORKS_ARGS+=("-library" "install/pcre-$p/lib/libpcre.a" "-headers" "install/pcre-$p/include")
+	done
+
+	cd $REPO_ROOT
+	xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output PCRE.xcframework
+	tar -cJf PCRE.xcframework.tar.xz PCRE.xcframework
 }
 
-build_libgit2 maccatalyst
-build_pcre maccatalyst
+build_libgit2_xcframework maccatalyst
+build_pcre_xcframework maccatalyst
