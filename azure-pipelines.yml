@@ -31,7 +31,7 @@ jobs:
   - publish: $(System.DefaultWorkingDirectory)/LibPCRE.xcframework.tar.xz
     artifact: LibPCRE
     displayName: 'Publish LibPCRE XCFramework'
-    enabled: true
+    enabled: false
 
   - publish: $(System.DefaultWorkingDirectory)
     artifact: AllFiles
