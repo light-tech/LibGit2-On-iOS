@@ -21,7 +21,7 @@ cmake --build . --target install
 
 cd $REPO_ROOT
 FRAMEWORKS_ARGS=()
-FRAMEWORKS_ARGS+=("-library" "install/lib/libgit2.a" "-headers" "install/include")
+FRAMEWORKS_ARGS+=("-library" "install/libgit2/lib/libgit2.a" "-headers" "install/libgit2/include")
 xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output Clibgit2.xcframework
 tar -cJf Clibgit2.xcframework.tar.xz Clibgit2.xcframework
 }
@@ -47,6 +47,12 @@ cmake -L
 cd build
 
 cmake --build . --target install
+
+cd $REPO_ROOT
+FRAMEWORKS_ARGS=()
+FRAMEWORKS_ARGS+=("-library" "install/pcre/lib/libpcre.a" "-headers" "install/pcre/include")
+xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output LibPCRE.xcframework
+tar -cJf LibPCRE.xcframework.tar.xz LibPCRE.xcframework
 }
 
 build_pcre maccatalyst
