@@ -39,11 +39,11 @@ function setup_variables() {
 function build_libgit2() {
 	setup_variables $1
 
-	git clone --recursive https://github.com/libgit2/libgit2.git
+	test -d libgit2 || git clone --recursive https://github.com/libgit2/libgit2.git
 	cd libgit2
 	# git submodule update --recursive
 
-	mkdir build && cd build
+	rm -rf build && mkdir build && cd build
 	CMAKE_ARGS+=(-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/libgit2-$PLATFORM
 		-DBUILD_CLAR=NO)
 
@@ -86,11 +86,10 @@ function build_libgit2_xcframework() {
 function build_pcre() {
 	setup_variables $1
 
-	wget https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz # https://ftp.pcre.org/pub/pcre/pcre2-10.36.tar.gz
-	tar xzf pcre-8.44.tar.gz
+	test -d pcre-8.44 || wget https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz && tar xzf pcre-8.44.tar.gz # https://ftp.pcre.org/pub/pcre/pcre2-10.36.tar.gz
 	cd pcre-8.44
 
-	mkdir build && cd build
+	rm -rf build && mkdir build && cd build
 	CMAKE_ARGS+=(-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/pcre-$PLATFORM \
 		-DPCRE_BUILD_PCRECPP=NO \
 		-DPCRE_BUILD_PCREGREP=NO \
