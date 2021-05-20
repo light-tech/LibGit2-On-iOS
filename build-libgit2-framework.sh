@@ -20,7 +20,7 @@ function setup_variables() {
 	case $PLATFORM in
 		"iphoneos")
 			SYSROOT=`xcodebuild -version -sdk iphoneos Path`
-			CMAKE_ARGS+=("-DCMAKE_OSX_SYSROOT=$SYSROOT");;
+			CMAKE_ARGS+=("-DCMAKE_C_COMPILER_WORKS=ON" "-DCMAKE_CXX_COMPILER_WORKS=ON" "-DCMAKE_OSX_SYSROOT=$SYSROOT");;
 		"iphonesimulator")
 			SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
 			CMAKE_ARGS+=("-DCMAKE_OSX_SYSROOT=$SYSROOT");;
@@ -128,5 +128,5 @@ function build_pcre_xcframework() {
 	tar -cJf PCRE.xcframework.tar.xz PCRE.xcframework
 }
 
-build_libgit2_xcframework iphoneos iphonesimulator maccatalyst
-build_pcre_xcframework iphoneos iphonesimulator maccatalyst
+#build_libgit2_xcframework iphoneos #iphonesimulator maccatalyst
+build_pcre_xcframework iphoneos #iphonesimulator maccatalyst

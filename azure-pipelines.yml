@@ -26,12 +26,12 @@ jobs:
   - publish: $(System.DefaultWorkingDirectory)/Clibgit2.xcframework.tar.xz
     artifact: Clibgit2
     displayName: 'Publish Clibgit2 XCFramework'
-    enabled: true
+    enabled: false
 
   - publish: $(System.DefaultWorkingDirectory)/PCRE.xcframework.tar.xz
     artifact: PCRE
     displayName: 'Publish LibPCRE XCFramework'
-    enabled: true
+    enabled: false
 
   - publish: $(System.DefaultWorkingDirectory)
     artifact: AllFiles
