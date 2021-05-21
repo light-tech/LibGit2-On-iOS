@@ -153,6 +153,33 @@ function build_pcre_xcframework() {
 	tar -cJf PCRE.xcframework.tar.xz PCRE.xcframework
 }
 
+function build_openssl() {
+	setup_variables $1
+
+	test -d openssl-OpenSSL_1_1_1k || wget https://github.com/openssl/openssl/archive/refs/tags/OpenSSL_1_1_1k.tar.gz && tar xzf OpenSSL_1_1_1k.tar.gz
+	cd openssl-OpenSSL_1_1_1k
+
+	case $PLATFORM in
+		"iphoneos")
+			SYSROOT=`xcodebuild -version -sdk iphoneos Path`
+			echo $SYSROOT
+			export CFLAGS="-isysroot $SYSROOT -arch arm64";;
+		"iphonesimulator")
+			SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
+			echo $SYSROOT
+			export CFLAGS="-isysroot $SYSROOT";;
+		"maccatalyst")
+			SYSROOT=`xcodebuild -version -sdk macosx Path`
+			export CFLAGS="-isysroot $SYSROOT -target x86_64-apple-ios14.1-macabi";;
+		*)
+			echo "Unsupported or missing platform!";;
+	esac
+
+	./Configure --prefix=$REPO_ROOT/install/openssl-$PLATFORM --openssldir=$REPO_ROOT/install/openssl-$PLATFORM iphoneos-cross
+	make
+	make install
+}
+
 function build_libssh2() {
 	setup_variables $1
 
@@ -183,4 +210,5 @@ function build_libssh2() {
 #build_libgit2 iphoneos
 #build_libgit2_xcframework iphoneos iphonesimulator maccatalyst
 
-build_libssh2 iphoneos
+#build_libssh2 iphoneos
+build_openssl maccatalyst

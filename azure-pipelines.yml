@@ -43,6 +43,11 @@ jobs:
     displayName: 'Publish Clibgit2 Folder for Inspection'
     enabled: false
 
+  - publish: $(System.DefaultWorkingDirectory)/openssl-OpenSSL_1_1_1k
+    artifact: OpenSSL
+    displayName: 'Publish OpenSSL Folder for Inspection'
+    enabled: true
+
   - publish: $(System.DefaultWorkingDirectory)
     artifact: AllFiles
     displayName: 'Publish all files for inspection'
