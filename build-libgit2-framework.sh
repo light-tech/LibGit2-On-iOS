@@ -90,6 +90,14 @@ function build_libgit2_xcframework() {
 
 	cd $REPO_ROOT
 	xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output Clibgit2.xcframework
+
+	# Copy the module.modulemap so we can use the framework in Swift
+	FWDIRS=$(find Clibgit2.xcframework -mindepth 1 -maxdepth 1 -type d)
+	for d in ${FWDIRS[@]}; do
+		echo $d
+		cp module.modulemap $d/Headers/
+	done
+
 	tar -cJf Clibgit2.xcframework.tar.xz Clibgit2.xcframework
 }
 
