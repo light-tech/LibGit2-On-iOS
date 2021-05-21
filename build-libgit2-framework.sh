@@ -48,9 +48,12 @@ function setup_variables() {
 function build_libgit2() {
 	setup_variables $1
 
-	test -d libgit2 || git clone --recursive https://github.com/libgit2/libgit2.git
-	cd libgit2
+	# test -d libgit2 || git clone --recursive https://github.com/libgit2/libgit2.git
+	# cd libgit2
 	# git submodule update --recursive
+
+	test -d libgit2-1.1.0 || wget https://github.com/libgit2/libgit2/releases/download/v1.1.0/libgit2-1.1.0.tar.gz && tar xzf libgit2-1.1.0.tar.gz
+	cd libgit2-1.1.0
 
 	rm -rf build && mkdir build && cd build
 	CMAKE_ARGS+=(-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/libgit2-$PLATFORM
@@ -76,6 +79,7 @@ function build_libgit2() {
 ### Example: build_libgit2_xcframework iphoneos maccatalyst
 ###
 function build_libgit2_xcframework() {
+	cd $REPO_ROOT
 	PLATFORMS=( "$@" )
 	FRAMEWORKS_ARGS=()
 
@@ -127,6 +131,7 @@ function build_pcre() {
 ### See @setup_variables for the list of available platform names
 ###
 function build_pcre_xcframework() {
+	cd $REPO_ROOT
 	PLATFORMS=( "$@" )
 	FRAMEWORKS_ARGS=()
 
@@ -143,5 +148,5 @@ function build_pcre_xcframework() {
 #build_pcre iphonesimulator
 build_pcre_xcframework iphoneos iphonesimulator maccatalyst
 
-build_libgit2 iphoneos
-#build_libgit2_xcframework iphoneos iphonesimulator maccatalyst
+#build_libgit2 iphoneos
+build_libgit2_xcframework iphoneos iphonesimulator maccatalyst
