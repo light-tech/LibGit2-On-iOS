@@ -153,8 +153,34 @@ function build_pcre_xcframework() {
 	tar -cJf PCRE.xcframework.tar.xz PCRE.xcframework
 }
 
+function build_libssh2() {
+	setup_variables $1
+
+	test -d libssh2-1.9.0 || wget https://github.com/libssh2/libssh2/releases/download/libssh2-1.9.0/libssh2-1.9.0.tar.gz && tar xzf libssh2-1.9.0.tar.gz
+	cd libssh2-1.9.0
+
+	rm -rf build && mkdir build && cd build
+
+	CMAKE_ARGS+=(-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/libssh2-$PLATFORM \
+		-DBUILD_EXAMPLES=OFF \
+		-DBUILD_TESTING=OFF)
+
+	echo ${CMAKE_ARGS[@]}
+
+	case $PLATFORM in
+		"iphoneos"|"iphonesimulator")
+			cmake ${CMAKE_ARGS[@]} ..;;
+		"maccatalyst")
+			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target x86_64-apple-ios14.1-macabi" ..;;
+	esac
+
+	cmake --build . --target install
+}
+
 #build_pcre iphonesimulator
-build_pcre_xcframework iphoneos iphonesimulator maccatalyst
+#build_pcre_xcframework iphoneos iphonesimulator maccatalyst
 
 #build_libgit2 iphoneos
-build_libgit2_xcframework iphoneos iphonesimulator maccatalyst
+#build_libgit2_xcframework iphoneos iphonesimulator maccatalyst
+
+build_libssh2 iphoneos

@@ -41,7 +41,7 @@ jobs:
   - publish: $(System.DefaultWorkingDirectory)/Clibgit2.xcframework
     artifact: Clibgit2Folder
     displayName: 'Publish Clibgit2 Folder for Inspection'
-    enabled: true
+    enabled: false
 
   - publish: $(System.DefaultWorkingDirectory)
     artifact: AllFiles
