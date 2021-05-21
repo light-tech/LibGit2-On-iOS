@@ -203,11 +203,28 @@ function build_libssh2() {
 	cmake --build . --target install
 }
 
+function build_libssh2_xcframework() {
+	cd $REPO_ROOT
+	PLATFORMS=( "$@" )
+	FRAMEWORKS_ARGS=()
+
+	for p in ${PLATFORMS[@]}; do
+		build_libssh2 $p
+		FRAMEWORKS_ARGS+=("-library" "install/libssh2-$p/lib/libssh2.a" "-headers" "install/libssh2-$p/include")
+	done
+
+	cd $REPO_ROOT
+	xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output libssh2.xcframework
+	tar -cJf libssh2.xcframework.tar.xz libssh2.xcframework
+}
+
 #build_pcre iphonesimulator
 #build_pcre_xcframework iphoneos iphonesimulator maccatalyst
 
 #build_libgit2 iphoneos
 #build_libgit2_xcframework iphoneos iphonesimulator maccatalyst
 
+#build_openssl iphonesimulator
+
 #build_libssh2 iphoneos
-build_openssl maccatalyst
+build_openssl maccatalystbuild_libssh2_xcframework iphoneos iphonesimulator maccatalyst
