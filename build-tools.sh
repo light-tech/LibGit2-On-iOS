@@ -6,6 +6,7 @@
 # Newer versions of these libraries are available and may work better on OS X
 ##
 
+export REPO_ROOT=`pwd`
 export build=`pwd`/temp # or wherever you'd like to build
 export install=`pwd`/tools
 mkdir -p $build
@@ -48,3 +49,6 @@ make
 make install
 
 echo "Installation complete."
+
+cd $REPO_ROOT
+tar -cJf tools.tar.xz tools
