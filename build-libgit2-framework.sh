@@ -17,6 +17,7 @@ tar xzf tools.tar.xz
 ### providing basic/common CMake options will be set.
 ###
 function setup_variables() {
+	cd $REPO_ROOT
 	echo "Setup variables " $1
 	PLATFORM=$1
 
