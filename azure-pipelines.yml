@@ -38,10 +38,15 @@ jobs:
     displayName: 'Publish LibPCRE XCFramework'
     enabled: false
 
+  - publish: $(System.DefaultWorkingDirectory)/openssl.xcframework.tar.xz
+    artifact: openssl
+    displayName: 'Publish openssl XCFramework'
+    enabled: true
+
   - publish: $(System.DefaultWorkingDirectory)/libssh2.xcframework.tar.xz
     artifact: libssh2
     displayName: 'Publish libssh2 XCFramework'
-    enabled: true
+    enabled: false
 
   - publish: $(System.DefaultWorkingDirectory)/Clibgit2.xcframework
     artifact: Clibgit2Folder

@@ -8,9 +8,9 @@ tar xzf tools.tar.xz
 ### Setup common environment variables to run CMake for a given platform
 ### Usage:      setup_variables PLATFORM
 ### where PLATFORM is the platform to build for and should be one of
-###    iphoneos
-###    iphonesimulator
-###    maccatalyst
+###    iphoneos            (for now implicitly arm64)
+###    iphonesimulator     (for now implicitly x86_64)
+###    maccatalyst         (for now implicitly x86_64)
 ### (macos and M1 macos to be added in the future)
 ###
 ### After this function is executed, the variable $PLATFORM and $CMAKE_ARGS
@@ -156,27 +156,53 @@ function build_pcre_xcframework() {
 function build_openssl() {
 	setup_variables $1
 
-	test -d openssl-OpenSSL_1_1_1k || wget https://github.com/openssl/openssl/archive/refs/tags/OpenSSL_1_1_1k.tar.gz && tar xzf OpenSSL_1_1_1k.tar.gz
+	# It is better to remove and redownload the source since building make the source code directory dirty!
+	rm -rf openssl-OpenSSL_1_1_1k
+	test -f OpenSSL_1_1_1k.tar.gz || wget https://github.com/openssl/openssl/archive/refs/tags/OpenSSL_1_1_1k.tar.gz
+	tar xzf OpenSSL_1_1_1k.tar.gz
 	cd openssl-OpenSSL_1_1_1k
 
 	case $PLATFORM in
 		"iphoneos")
 			SYSROOT=`xcodebuild -version -sdk iphoneos Path`
+			TARGET_OS=ios64-cross
 			export CFLAGS="-isysroot $SYSROOT -arch arm64";;
 		"iphonesimulator")
 			SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
+			TARGET_OS=iossimulator-xcrun
 			export CFLAGS="-isysroot $SYSROOT";;
 		"maccatalyst")
 			SYSROOT=`xcodebuild -version -sdk macosx Path`
+			TARGET_OS=darwin64-x86_64-cc
 			export CFLAGS="-isysroot $SYSROOT -target x86_64-apple-ios14.1-macabi";;
 		*)
 			echo "Unsupported or missing platform!";;
 	esac
 
 	# See https://wiki.openssl.org/index.php/Compilation_and_Installation
-	./Configure --prefix=$REPO_ROOT/install/openssl-$PLATFORM --openssldir=$REPO_ROOT/install/openssl-$PLATFORM ios64-cross no-shared no-dso no-hw no-engine
+	./Configure --prefix=$REPO_ROOT/install/openssl-$PLATFORM --openssldir=$REPO_ROOT/install/openssl-$PLATFORM $TARGET_OS no-shared no-dso no-hw no-engine
 	make
 	make install
+}
+
+function build_openssl_xcframework() {
+	cd $REPO_ROOT
+	PLATFORMS=( "$@" )
+	FRAMEWORKS_ARGS=()
+
+	for p in ${PLATFORMS[@]}; do
+		build_openssl $p
+
+		# Merge two static libraries libssl.a and libcrypto.a into a single openssl.a since XCFramework does not allow multiple *.a
+		cd $REPO_ROOT/install/openssl-$p/lib
+		libtool -static -o openssl.a *.a
+
+		FRAMEWORKS_ARGS+=("-library" "install/openssl-$p/lib/openssl.a" "-headers" "install/openssl-$p/include")
+	done
+
+	cd $REPO_ROOT
+	xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output openssl.xcframework
+	tar -cJf openssl.xcframework.tar.xz openssl.xcframework
 }
 
 function build_libssh2() {
@@ -225,6 +251,7 @@ function build_libssh2_xcframework() {
 #build_libgit2_xcframework iphoneos iphonesimulator maccatalyst
 
 #build_openssl iphonesimulator
+build_openssl_xcframework iphoneos iphonesimulator maccatalyst
 
 #build_libssh2 iphoneos
-build_openssl maccatalystbuild_libssh2_xcframework iphoneos iphonesimulator maccatalyst
+#build_libssh2_xcframework iphoneos iphonesimulator maccatalyst
