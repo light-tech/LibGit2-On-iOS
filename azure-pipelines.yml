@@ -46,9 +46,9 @@ jobs:
   - publish: $(System.DefaultWorkingDirectory)/openssl-OpenSSL_1_1_1k
     artifact: OpenSSL
     displayName: 'Publish OpenSSL Folder for Inspection'
-    enabled: true
+    enabled: false
 
   - publish: $(System.DefaultWorkingDirectory)
     artifact: AllFiles
     displayName: 'Publish all files for inspection'
-    enabled: false
+    enabled: true

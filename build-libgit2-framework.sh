@@ -162,11 +162,9 @@ function build_openssl() {
 	case $PLATFORM in
 		"iphoneos")
 			SYSROOT=`xcodebuild -version -sdk iphoneos Path`
-			echo $SYSROOT
 			export CFLAGS="-isysroot $SYSROOT -arch arm64";;
 		"iphonesimulator")
 			SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
-			echo $SYSROOT
 			export CFLAGS="-isysroot $SYSROOT";;
 		"maccatalyst")
 			SYSROOT=`xcodebuild -version -sdk macosx Path`
@@ -175,7 +173,8 @@ function build_openssl() {
 			echo "Unsupported or missing platform!";;
 	esac
 
-	./Configure --prefix=$REPO_ROOT/install/openssl-$PLATFORM --openssldir=$REPO_ROOT/install/openssl-$PLATFORM iphoneos-cross
+	# See https://wiki.openssl.org/index.php/Compilation_and_Installation
+	./Configure --prefix=$REPO_ROOT/install/openssl-$PLATFORM --openssldir=$REPO_ROOT/install/openssl-$PLATFORM ios64-cross no-shared no-dso no-hw no-engine
 	make
 	make install
 }
