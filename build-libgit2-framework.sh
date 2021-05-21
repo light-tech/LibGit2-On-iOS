@@ -1,6 +1,10 @@
 export REPO_ROOT=`pwd`
 export PATH=$PATH:$REPO_ROOT/tools/bin
 
+# Download build tools
+test -d tools || wget https://github.com/light-tech/LLVM-On-iOS/releases/download/llvm12.0.0/tools.tar.xz
+tar xzf tools.tar.xz
+
 ### Setup common environment variables to run CMake for a given platform
 ### Usage:      setup_variables PLATFORM
 ### where PLATFORM is the platform to build for and should be one of
@@ -135,6 +139,6 @@ function build_pcre_xcframework() {
 	tar -cJf PCRE.xcframework.tar.xz PCRE.xcframework
 }
 
-build_pcre iphoneos
+build_pcre iphonesimulator
 #build_libgit2_xcframework iphoneos iphonesimulator maccatalyst
 #build_pcre_xcframework iphoneos iphonesimulator maccatalyst

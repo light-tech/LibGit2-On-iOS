@@ -16,17 +16,17 @@ jobs:
 
   - script: ./build-tools.sh
     displayName: 'Build autoconf, automake and libtool for local use'
-    enabled: true
+    enabled: false
 
   - publish: $(System.DefaultWorkingDirectory)/tools.tar.xz
     artifact: BuildTools
     displayName: 'Publish auto build tools'
-    enabled: true
+    enabled: false
 
   - script: ./build-libgit2-framework.sh
     displayName: 'Build LibGit2 Framework from Source'
     continueOnError: false
-    enabled: false
+    enabled: true
 
   - publish: $(System.DefaultWorkingDirectory)/Clibgit2.xcframework.tar.xz
     artifact: Clibgit2
