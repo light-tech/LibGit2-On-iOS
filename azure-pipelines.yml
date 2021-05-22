@@ -28,14 +28,14 @@ jobs:
     continueOnError: false
     enabled: true
 
-  - publish: $(System.DefaultWorkingDirectory)/Clibgit2.xcframework.tar.xz
-    artifact: Clibgit2
-    displayName: 'Publish Clibgit2 XCFramework'
+  - publish: $(System.DefaultWorkingDirectory)/libgit2.xcframework.tar.xz
+    artifact: libgit2
+    displayName: 'Publish libgit2 XCFramework'
     enabled: false
 
-  - publish: $(System.DefaultWorkingDirectory)/PCRE.xcframework.tar.xz
-    artifact: PCRE
-    displayName: 'Publish LibPCRE XCFramework'
+  - publish: $(System.DefaultWorkingDirectory)/pcre.xcframework.tar.xz
+    artifact: pcre
+    displayName: 'Publish pcre XCFramework'
     enabled: false
 
   - publish: $(System.DefaultWorkingDirectory)/openssl.xcframework.tar.xz
@@ -46,16 +46,6 @@ jobs:
   - publish: $(System.DefaultWorkingDirectory)/libssh2.xcframework.tar.xz
     artifact: libssh2
     displayName: 'Publish libssh2 XCFramework'
-    enabled: false
-
-  - publish: $(System.DefaultWorkingDirectory)/Clibgit2.xcframework
-    artifact: Clibgit2Folder
-    displayName: 'Publish Clibgit2 Folder for Inspection'
-    enabled: false
-
-  - publish: $(System.DefaultWorkingDirectory)/openssl-OpenSSL_1_1_1k
-    artifact: OpenSSL
-    displayName: 'Publish OpenSSL Folder for Inspection'
     enabled: false
 
   - publish: $(System.DefaultWorkingDirectory)

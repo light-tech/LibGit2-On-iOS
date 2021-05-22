@@ -66,10 +66,6 @@ function build_libgit2() {
 			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target x86_64-apple-ios14.1-macabi" ..;;
 	esac
 
-	#cd ..
-	#cmake -L
-	#cd build
-
 	cmake --build . --target install
 }
 
@@ -89,16 +85,16 @@ function build_libgit2_xcframework() {
 	done
 
 	cd $REPO_ROOT
-	xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output Clibgit2.xcframework
+	xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output libgit2.xcframework
 
 	# Copy the module.modulemap so we can use the framework in Swift
-	FWDIRS=$(find Clibgit2.xcframework -mindepth 1 -maxdepth 1 -type d)
+	FWDIRS=$(find libgit2.xcframework -mindepth 1 -maxdepth 1 -type d)
 	for d in ${FWDIRS[@]}; do
 		echo $d
 		cp module.modulemap $d/Headers/
 	done
 
-	tar -cJf Clibgit2.xcframework.tar.xz Clibgit2.xcframework
+	tar -cJf libgit2.xcframework.tar.xz libgit2.xcframework
 }
 
 ### Build libpcre for a single platform
@@ -126,11 +122,6 @@ function build_pcre() {
 			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target x86_64-apple-ios14.1-macabi" ..;;
 	esac
 
-	#cd ..
-	#cmake -L
-	#cd build
-	echo `pwd`
-
 	cmake --build . --target install
 }
 
@@ -149,8 +140,8 @@ function build_pcre_xcframework() {
 	done
 
 	cd $REPO_ROOT
-	xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output PCRE.xcframework
-	tar -cJf PCRE.xcframework.tar.xz PCRE.xcframework
+	xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output pcre.xcframework
+	tar -cJf pcre.xcframework.tar.xz pcre.xcframework
 }
 
 function build_openssl() {
@@ -180,9 +171,16 @@ function build_openssl() {
 	esac
 
 	# See https://wiki.openssl.org/index.php/Compilation_and_Installation
-	./Configure --prefix=$REPO_ROOT/install/openssl-$PLATFORM --openssldir=$REPO_ROOT/install/openssl-$PLATFORM $TARGET_OS no-shared no-dso no-hw no-engine
+	./Configure --prefix=$REPO_ROOT/install/openssl-$PLATFORM \
+		--openssldir=$REPO_ROOT/install/openssl-$PLATFORM \
+		$TARGET_OS no-shared no-dso no-hw no-engine
+
 	make
 	make install
+
+	# Merge two static libraries libssl.a and libcrypto.a into a single openssl.a since XCFramework does not allow multiple *.a
+	cd $REPO_ROOT/install/openssl-$PLATFORM/lib
+	libtool -static -o openssl.a *.a
 }
 
 function build_openssl_xcframework() {
@@ -192,11 +190,6 @@ function build_openssl_xcframework() {
 
 	for p in ${PLATFORMS[@]}; do
 		build_openssl $p
-
-		# Merge two static libraries libssl.a and libcrypto.a into a single openssl.a since XCFramework does not allow multiple *.a
-		cd $REPO_ROOT/install/openssl-$p/lib
-		libtool -static -o openssl.a *.a
-
 		FRAMEWORKS_ARGS+=("-library" "install/openssl-$p/lib/openssl.a" "-headers" "install/openssl-$p/include")
 	done
 
@@ -247,11 +240,11 @@ function build_libssh2_xcframework() {
 #build_pcre iphonesimulator
 #build_pcre_xcframework iphoneos iphonesimulator maccatalyst
 
-#build_libgit2 iphoneos
-#build_libgit2_xcframework iphoneos iphonesimulator maccatalyst
-
 #build_openssl iphonesimulator
 build_openssl_xcframework iphoneos iphonesimulator maccatalyst
 
 #build_libssh2 iphoneos
 #build_libssh2_xcframework iphoneos iphonesimulator maccatalyst
+
+#build_libgit2 iphoneos
+#build_libgit2_xcframework iphoneos iphonesimulator maccatalyst
