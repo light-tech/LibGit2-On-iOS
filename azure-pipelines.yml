@@ -31,22 +31,22 @@ jobs:
   - publish: $(System.DefaultWorkingDirectory)/libgit2.xcframework.tar.xz
     artifact: libgit2
     displayName: 'Publish libgit2 XCFramework'
-    enabled: false
+    enabled: true
 
   - publish: $(System.DefaultWorkingDirectory)/pcre.xcframework.tar.xz
     artifact: pcre
     displayName: 'Publish pcre XCFramework'
-    enabled: false
+    enabled: true
 
   - publish: $(System.DefaultWorkingDirectory)/openssl.xcframework.tar.xz
     artifact: openssl
     displayName: 'Publish openssl XCFramework'
-    enabled: false
+    enabled: true
 
   - publish: $(System.DefaultWorkingDirectory)/libssh2.xcframework.tar.xz
     artifact: libssh2
     displayName: 'Publish libssh2 XCFramework'
-    enabled: false
+    enabled: true
 
   - publish: $(System.DefaultWorkingDirectory)
     artifact: AllFiles

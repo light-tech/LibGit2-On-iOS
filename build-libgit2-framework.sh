@@ -52,18 +52,23 @@ function build_libgit2() {
 	# cd libgit2
 	# git submodule update --recursive
 
-	test -d libgit2-1.1.0 || wget https://github.com/libgit2/libgit2/releases/download/v1.1.0/libgit2-1.1.0.tar.gz && tar xzf libgit2-1.1.0.tar.gz
+	rm -rf libgit2-1.1.0
+	test -f libgit2-1.1.0.tar.gz || wget https://github.com/libgit2/libgit2/releases/download/v1.1.0/libgit2-1.1.0.tar.gz
+	tar xzf libgit2-1.1.0.tar.gz
 	cd libgit2-1.1.0
 
 	rm -rf build && mkdir build && cd build
 
-	# See libgit2/cmake/FindPkgLibraries.cmake
 	CMAKE_ARGS+=(-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/libgit2-$PLATFORM \
-		-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/openssl-$PLATFORM \
+		-DBUILD_CLAR=NO)
+
+	# See libgit2/cmake/FindPkgLibraries.cmake to understand how libgit2 looks for libssh2
+	# Basically, setting LIBSSH2_FOUND forces SSH support and since we are building static library,
+	# we only need the headers.
+	CMAKE_ARGS+=(-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/openssl-$PLATFORM \
 		-DUSE_SSH=ON \
 		-DLIBSSH2_FOUND=YES \
-		-DLIBSSH2_INCLUDE_DIRS=$REPO_ROOT/install/libssh2-$PLATFORM \
-		-DBUILD_CLAR=NO)
+		-DLIBSSH2_INCLUDE_DIRS=$REPO_ROOT/install/libssh2-$PLATFORM)
 
 	case $PLATFORM in
 		"iphoneos"|"iphonesimulator")
@@ -109,7 +114,9 @@ function build_libgit2_xcframework() {
 function build_pcre() {
 	setup_variables $1
 
-	test -d pcre-8.44 || wget https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz && tar xzf pcre-8.44.tar.gz # https://ftp.pcre.org/pub/pcre/pcre2-10.36.tar.gz
+	rm -rf pcre-8.44
+	test -f pcre-8.44.tar.gz || wget https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz # https://ftp.pcre.org/pub/pcre/pcre2-10.36.tar.gz
+	tar xzf pcre-8.44.tar.gz
 	cd pcre-8.44
 
 	rm -rf build && mkdir build && cd build
@@ -119,8 +126,6 @@ function build_pcre() {
 		-DPCRE_BUILD_TESTS=NO \
 		-DPCRE_SUPPORT_LIBBZ2=NO)
 
-	echo ${CMAKE_ARGS[@]}
-
 	case $PLATFORM in
 		"iphoneos"|"iphonesimulator")
 			cmake ${CMAKE_ARGS[@]} ..;;
@@ -128,7 +133,7 @@ function build_pcre() {
 			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target x86_64-apple-ios14.1-macabi" ..;;
 	esac
 
-	cmake --build . --target install
+	cmake --build . --target install >/dev/null
 }
 
 ### Build PCRE xcframework
@@ -181,8 +186,8 @@ function build_openssl() {
 		--openssldir=$REPO_ROOT/install/openssl-$PLATFORM \
 		$TARGET_OS no-shared no-dso no-hw no-engine
 
-	make
-	make install
+	make >/dev/null
+	make install >/dev/null
 
 	# Merge two static libraries libssl.a and libcrypto.a into a single openssl.a since XCFramework does not allow multiple *.a
 	cd $REPO_ROOT/install/openssl-$PLATFORM/lib
@@ -207,7 +212,9 @@ function build_openssl_xcframework() {
 function build_libssh2() {
 	setup_variables $1
 
-	test -d libssh2-1.9.0 || wget https://github.com/libssh2/libssh2/releases/download/libssh2-1.9.0/libssh2-1.9.0.tar.gz && tar xzf libssh2-1.9.0.tar.gz
+	rm -rf libssh2-1.9.0
+	test -f libssh2-1.9.0.tar.gz || wget https://github.com/libssh2/libssh2/releases/download/libssh2-1.9.0/libssh2-1.9.0.tar.gz
+	tar xzf libssh2-1.9.0.tar.gz
 	cd libssh2-1.9.0
 
 	rm -rf build && mkdir build && cd build
@@ -218,8 +225,6 @@ function build_libssh2() {
 		-DBUILD_EXAMPLES=OFF \
 		-DBUILD_TESTING=OFF)
 
-	echo ${CMAKE_ARGS[@]}
-
 	case $PLATFORM in
 		"iphoneos"|"iphonesimulator")
 			cmake ${CMAKE_ARGS[@]} ..;;
@@ -227,7 +232,7 @@ function build_libssh2() {
 			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target x86_64-apple-ios14.1-macabi" ..;;
 	esac
 
-	cmake --build . --target install
+	cmake --build . --target install >/dev/null
 }
 
 function build_libssh2_xcframework() {
@@ -246,13 +251,13 @@ function build_libssh2_xcframework() {
 }
 
 #build_pcre iphoneos
-#build_pcre_xcframework iphoneos iphonesimulator maccatalyst
+build_pcre_xcframework iphoneos iphonesimulator maccatalyst
 
-build_openssl iphoneos
-#build_openssl_xcframework iphoneos iphonesimulator maccatalyst
+#build_openssl iphoneos
+build_openssl_xcframework iphoneos iphonesimulator maccatalyst
 
-build_libssh2 iphoneos
-#build_libssh2_xcframework iphoneos iphonesimulator maccatalyst
+#build_libssh2 iphoneos
+build_libssh2_xcframework iphoneos iphonesimulator maccatalyst
 
-build_libgit2 iphoneos
-#build_libgit2_xcframework iphoneos iphonesimulator maccatalyst
+#build_libgit2 iphoneos
+build_libgit2_xcframework iphoneos iphonesimulator maccatalyst
