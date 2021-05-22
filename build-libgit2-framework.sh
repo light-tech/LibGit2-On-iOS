@@ -56,7 +56,12 @@ function build_libgit2() {
 	cd libgit2-1.1.0
 
 	rm -rf build && mkdir build && cd build
-	CMAKE_ARGS+=(-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/libgit2-$PLATFORM
+
+	# See libgit2/cmake/FindPkgLibraries.cmake
+	CMAKE_ARGS+=(-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/libgit2-$PLATFORM \
+		-DUSE_SSH=ON \
+		-DLIBSSH2_FOUND=YES \
+		-DLIBSSH2_INCLUDE_DIRS=$REPO_ROOT/install/libssh2-$PLATFORM \
 		-DBUILD_CLAR=NO)
 
 	case $PLATFORM in
@@ -239,7 +244,7 @@ function build_libssh2_xcframework() {
 	tar -cJf libssh2.xcframework.tar.xz libssh2.xcframework
 }
 
-#build_pcre iphonesimulator
+#build_pcre iphoneos
 #build_pcre_xcframework iphoneos iphonesimulator maccatalyst
 
 build_openssl iphoneos
@@ -248,5 +253,5 @@ build_openssl iphoneos
 build_libssh2 iphoneos
 #build_libssh2_xcframework iphoneos iphonesimulator maccatalyst
 
-#build_libgit2 iphoneos
+build_libgit2 iphoneos
 #build_libgit2_xcframework iphoneos iphonesimulator maccatalyst
