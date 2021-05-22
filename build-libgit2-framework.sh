@@ -135,7 +135,7 @@ function build_openssl() {
 		$TARGET_OS no-shared no-dso no-hw no-engine
 
 	make >/dev/null
-	make install >/dev/null
+	make install_sw >/dev/null
 
 	# Merge two static libraries libssl.a and libcrypto.a into a single openssl.a since XCFramework does not allow multiple *.a
 	cd $REPO_ROOT/install/openssl-$PLATFORM/lib
