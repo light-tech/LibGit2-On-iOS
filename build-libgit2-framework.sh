@@ -207,6 +207,8 @@ function build_libssh2() {
 	rm -rf build && mkdir build && cd build
 
 	CMAKE_ARGS+=(-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/libssh2-$PLATFORM \
+		-DCRYPTO_BACKEND=OpenSSL \
+		-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/openssl-$PLATFORM \
 		-DBUILD_EXAMPLES=OFF \
 		-DBUILD_TESTING=OFF)
 
@@ -240,10 +242,10 @@ function build_libssh2_xcframework() {
 #build_pcre iphonesimulator
 #build_pcre_xcframework iphoneos iphonesimulator maccatalyst
 
-#build_openssl iphonesimulator
-build_openssl_xcframework iphoneos iphonesimulator maccatalyst
+build_openssl iphoneos
+#build_openssl_xcframework iphoneos iphonesimulator maccatalyst
 
-#build_libssh2 iphoneos
+build_libssh2 iphoneos
 #build_libssh2_xcframework iphoneos iphonesimulator maccatalyst
 
 #build_libgit2 iphoneos

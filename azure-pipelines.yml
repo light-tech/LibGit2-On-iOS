@@ -41,7 +41,7 @@ jobs:
   - publish: $(System.DefaultWorkingDirectory)/openssl.xcframework.tar.xz
     artifact: openssl
     displayName: 'Publish openssl XCFramework'
-    enabled: true
+    enabled: false
 
   - publish: $(System.DefaultWorkingDirectory)/libssh2.xcframework.tar.xz
     artifact: libssh2
