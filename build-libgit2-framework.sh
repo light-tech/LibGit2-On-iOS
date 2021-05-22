@@ -59,6 +59,7 @@ function build_libgit2() {
 
 	# See libgit2/cmake/FindPkgLibraries.cmake
 	CMAKE_ARGS+=(-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/libgit2-$PLATFORM \
+		-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/openssl-$PLATFORM \
 		-DUSE_SSH=ON \
 		-DLIBSSH2_FOUND=YES \
 		-DLIBSSH2_INCLUDE_DIRS=$REPO_ROOT/install/libssh2-$PLATFORM \
