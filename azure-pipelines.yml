@@ -33,9 +33,9 @@ jobs:
     displayName: 'Publish libgit2 XCFramework'
     enabled: true
 
-  - publish: $(System.DefaultWorkingDirectory)/pcre.xcframework.tar.xz
-    artifact: pcre
-    displayName: 'Publish pcre XCFramework'
+  - publish: $(System.DefaultWorkingDirectory)/libpcre.xcframework.tar.xz
+    artifact: libpcre
+    displayName: 'Publish libpcre XCFramework'
     enabled: true
 
   - publish: $(System.DefaultWorkingDirectory)/openssl.xcframework.tar.xz
@@ -46,6 +46,11 @@ jobs:
   - publish: $(System.DefaultWorkingDirectory)/libssh2.xcframework.tar.xz
     artifact: libssh2
     displayName: 'Publish libssh2 XCFramework'
+    enabled: true
+
+  - publish: $(System.DefaultWorkingDirectory)/install
+    artifact: install
+    displayName: 'Publish all install files for inspection'
     enabled: true
 
   - publish: $(System.DefaultWorkingDirectory)
