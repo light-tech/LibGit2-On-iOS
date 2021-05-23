@@ -28,23 +28,23 @@ jobs:
     continueOnError: false
     enabled: true
 
-  - publish: $(System.DefaultWorkingDirectory)/libgit2.xcframework.tar.xz
-    artifact: libgit2
+  - publish: $(System.DefaultWorkingDirectory)/libgit2.xcframework
+    artifact: libgit2.xcframework
     displayName: 'Publish libgit2 XCFramework'
     enabled: true
 
-  - publish: $(System.DefaultWorkingDirectory)/libpcre.xcframework.tar.xz
-    artifact: libpcre
+  - publish: $(System.DefaultWorkingDirectory)/libpcre.xcframework
+    artifact: libpcre.xcframework
     displayName: 'Publish libpcre XCFramework'
     enabled: true
 
-  - publish: $(System.DefaultWorkingDirectory)/openssl.xcframework.tar.xz
-    artifact: openssl
+  - publish: $(System.DefaultWorkingDirectory)/openssl.xcframework
+    artifact: openssl.xcframework
     displayName: 'Publish openssl XCFramework'
     enabled: true
 
-  - publish: $(System.DefaultWorkingDirectory)/libssh2.xcframework.tar.xz
-    artifact: libssh2
+  - publish: $(System.DefaultWorkingDirectory)/libssh2.xcframework
+    artifact: libssh2.xcframework
     displayName: 'Publish libssh2 XCFramework'
     enabled: true
 

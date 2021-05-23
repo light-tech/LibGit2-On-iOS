@@ -192,7 +192,7 @@ function build_xcframework() {
 	cd $REPO_ROOT
 	copy_modulemap
 	xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output $FWNAME.xcframework
-	tar -cJf $FWNAME.xcframework.tar.xz $FWNAME.xcframework
+	# tar -cJf $FWNAME.xcframework.tar.xz $FWNAME.xcframework
 }
 
 AVAILABLE_PLATFORMS=(iphoneos iphonesimulator maccatalyst)
