@@ -78,7 +78,7 @@ function build_libgit2() {
 ### Build libpcre for a single platform
 ### See @setup_variables for the list of available platform names
 ###
-function build_pcre() {
+function build_libpcre() {
 	setup_variables $1
 
 	rm -rf pcre-8.44
@@ -135,7 +135,7 @@ function build_openssl() {
 		$TARGET_OS no-shared no-dso no-hw no-engine
 
 	make >/dev/null
-	make install_sw >/dev/null
+	make install_sw install_ssldirs >/dev/null
 
 	# Merge two static libraries libssl.a and libcrypto.a into a single openssl.a since XCFramework does not allow multiple *.a
 	cd $REPO_ROOT/install/openssl-$PLATFORM/lib
@@ -168,11 +168,20 @@ function build_libssh2() {
 	cmake --build . --target install >/dev/null
 }
 
+function copy_modulemap() {
+	# Copy the module.modulemap so we can use the framework in Swift
+	local FWDIRS=$(find libgit2.xcframework -mindepth 1 -maxdepth 1 -type d)
+	for d in ${FWDIRS[@]}; do
+		echo $d
+		cp module.modulemap $d/Headers/
+	done
+}
+
 function build_xcframework() {
-	FWNAME=$1
+	local FWNAME=$1
 	shift
-	PLATFORMS=( "$@" )
-	FRAMEWORKS_ARGS=()
+	local PLATFORMS=( "$@" )
+	local FRAMEWORKS_ARGS=()
 
 	echo "Building" $FWNAME "XCFramework containing" ${PLATFORMS[@]}
 
@@ -181,35 +190,21 @@ function build_xcframework() {
 	done
 
 	cd $REPO_ROOT
+	copy_modulemap
 	xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output $FWNAME.xcframework
 	tar -cJf $FWNAME.xcframework.tar.xz $FWNAME.xcframework
 }
 
-function copy_modulemap() {
-	# Copy the module.modulemap so we can use the framework in Swift
-	FWDIRS=$(find libgit2.xcframework -mindepth 1 -maxdepth 1 -type d)
-	for d in ${FWDIRS[@]}; do
-		echo $d
-		cp module.modulemap $d/Headers/
-	done
-}
+AVAILABLE_PLATFORMS=(iphoneos iphonesimulator maccatalyst)
+AVAILABLE_FRAMEWORKS=(libpcre openssl libssh2 libgit2)
 
-build_pcre    iphoneos
-build_openssl iphoneos
-build_libssh2 iphoneos
-build_libgit2 iphoneos
+for p in ${AVAILABLE_PLATFORMS[@]}; do
+	build_libpcre $p
+	build_openssl $p
+	build_libssh2 $p
+	build_libgit2 $p
+done
 
-build_pcre    iphonesimulator
-build_openssl iphonesimulator
-build_libssh2 iphonesimulator
-build_libgit2 iphonesimulator
-
-build_pcre    maccatalyst
-build_openssl maccatalyst
-build_libssh2 maccatalyst
-build_libgit2 maccatalyst
-
-build_xcframework libpcre iphoneos iphonesimulator maccatalyst
-build_xcframework openssl iphoneos iphonesimulator maccatalyst
-build_xcframework libssh2 iphoneos iphonesimulator maccatalyst
-build_xcframework libgit2 iphoneos iphonesimulator maccatalyst
+for fw in ${AVAILABLE_FRAMEWORKS[@]}; do
+	build_xcframework $fw ${AVAILABLE_PLATFORMS[@]}
+done
