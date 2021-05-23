@@ -7,13 +7,13 @@ See [here](https://lightech.visualstudio.com/LibGit2-On-iOS/_build?definitionId=
 
 If you want to build the frameworks on your own machine, simply execute the script
 ```shell
-    build-libgit2-framework.sh
+build-libgit2-framework.sh
 ```
 at the root of this repository.
 
 To test, you can get our iOS example project by cloning
 ```shell
-    git clone https://lightech.visualstudio.com/LibGit2-On-iOS/_git/SampleApp
+git clone https://lightech.visualstudio.com/LibGit2-On-iOS/_git/SampleApp
 ```
 
 The first thing that might have come to your mind is:

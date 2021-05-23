@@ -1,5 +1,7 @@
 export REPO_ROOT=`pwd`
 export PATH=$PATH:$REPO_ROOT/tools/bin
+AVAILABLE_PLATFORMS=(iphoneos iphonesimulator maccatalyst)
+AVAILABLE_FRAMEWORKS=(libpcre openssl libssh2 libgit2)
 
 # Download build tools
 test -d tools || wget https://github.com/light-tech/LLVM-On-iOS/releases/download/llvm12.0.0/tools.tar.xz
@@ -15,31 +17,36 @@ tar xzf tools.tar.xz
 ###
 ### After this function is executed, the variable $PLATFORM and $CMAKE_ARGS
 ### providing basic/common CMake options will be set.
-###
 function setup_variables() {
 	cd $REPO_ROOT
 	PLATFORM=$1
 
-	CMAKE_ARGS=(-DBUILD_SHARED_LIBS=NO -DCMAKE_BUILD_TYPE=Release)
+	CMAKE_ARGS=(-DBUILD_SHARED_LIBS=NO \
+		-DCMAKE_BUILD_TYPE=Release)
 
 	case $PLATFORM in
 		"iphoneos")
 			SYSROOT=`xcodebuild -version -sdk iphoneos Path`
-			CMAKE_ARGS+=("-DCMAKE_C_COMPILER_WORKS=ON" "-DCMAKE_CXX_COMPILER_WORKS=ON" "-DCMAKE_OSX_ARCHITECTURES=arm64" "-DCMAKE_OSX_SYSROOT=$SYSROOT");;
+			CMAKE_ARGS+=(-DCMAKE_C_COMPILER_WORKS=ON \
+				-DCMAKE_CXX_COMPILER_WORKS=ON \
+				-DCMAKE_OSX_ARCHITECTURES=arm64 \
+				-DCMAKE_OSX_SYSROOT=$SYSROOT);;
+
 		"iphonesimulator")
 			SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
-			CMAKE_ARGS+=("-DCMAKE_OSX_SYSROOT=$SYSROOT");;
+			CMAKE_ARGS+=(-DCMAKE_OSX_SYSROOT=$SYSROOT);;
+
 		"maccatalyst")
 			SYSROOT=`xcodebuild -version -sdk macosx Path`;;
+
 		*)
-			echo "Unsupported or missing platform!"
-			echo "Usage: setup_variables [iphoneos|iphonesimulator|maccatalyst]";;
+			echo "Unsupported or missing platform! Must be one of" ${AVAILABLE_PLATFORMS[@]};;
 	esac
 }
 
 ### Build libgit2 for a single platform (given as the first and only argument)
 ### See @setup_variables for the list of available platform names
-###
+### Assume openssl and libssh2 was built
 function build_libgit2() {
 	setup_variables $1
 
@@ -68,6 +75,7 @@ function build_libgit2() {
 	case $PLATFORM in
 		"iphoneos"|"iphonesimulator")
 			cmake ${CMAKE_ARGS[@]} ..;;
+
 		"maccatalyst")
 			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target x86_64-apple-ios14.1-macabi" ..;;
 	esac
@@ -75,9 +83,7 @@ function build_libgit2() {
 	cmake --build . --target install
 }
 
-### Build libpcre for a single platform
-### See @setup_variables for the list of available platform names
-###
+### Build libpcre for a given platform
 function build_libpcre() {
 	setup_variables $1
 
@@ -96,6 +102,7 @@ function build_libpcre() {
 	case $PLATFORM in
 		"iphoneos"|"iphonesimulator")
 			cmake ${CMAKE_ARGS[@]} ..;;
+
 		"maccatalyst")
 			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target x86_64-apple-ios14.1-macabi" ..;;
 	esac
@@ -103,6 +110,7 @@ function build_libpcre() {
 	cmake --build . --target install >/dev/null
 }
 
+### Build openssl for a given platform
 function build_openssl() {
 	setup_variables $1
 
@@ -117,14 +125,17 @@ function build_openssl() {
 			SYSROOT=`xcodebuild -version -sdk iphoneos Path`
 			TARGET_OS=ios64-cross
 			export CFLAGS="-isysroot $SYSROOT -arch arm64";;
+
 		"iphonesimulator")
 			SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
 			TARGET_OS=iossimulator-xcrun
 			export CFLAGS="-isysroot $SYSROOT";;
+
 		"maccatalyst")
 			SYSROOT=`xcodebuild -version -sdk macosx Path`
 			TARGET_OS=darwin64-x86_64-cc
 			export CFLAGS="-isysroot $SYSROOT -target x86_64-apple-ios14.1-macabi";;
+
 		*)
 			echo "Unsupported or missing platform!";;
 	esac
@@ -137,11 +148,13 @@ function build_openssl() {
 	make >/dev/null
 	make install_sw install_ssldirs >/dev/null
 
-	# Merge two static libraries libssl.a and libcrypto.a into a single openssl.a since XCFramework does not allow multiple *.a
+	# Merge two static libraries libssl.a and libcrypto.a into a single static library openssl.a
+	# since xcodebuild/XCFramework does not allow multiple static library specification
 	cd $REPO_ROOT/install/openssl-$PLATFORM/lib
 	libtool -static -o openssl.a *.a
 }
 
+### Build libssh2 for a given platform (assume openssl was built)
 function build_libssh2() {
 	setup_variables $1
 
@@ -161,6 +174,7 @@ function build_libssh2() {
 	case $PLATFORM in
 		"iphoneos"|"iphonesimulator")
 			cmake ${CMAKE_ARGS[@]} ..;;
+
 		"maccatalyst")
 			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target x86_64-apple-ios14.1-macabi" ..;;
 	esac
@@ -168,8 +182,9 @@ function build_libssh2() {
 	cmake --build . --target install >/dev/null
 }
 
+### Copy SwiftGit2's module.modulemap to libgit2.xcframework/*/Headers
+### so that we can use libgit2.xcframework with SwiftGit2
 function copy_modulemap() {
-	# Copy the module.modulemap so we can use the framework in Swift
 	local FWDIRS=$(find libgit2.xcframework -mindepth 1 -maxdepth 1 -type d)
 	for d in ${FWDIRS[@]}; do
 		echo $d
@@ -177,6 +192,7 @@ function copy_modulemap() {
 	done
 }
 
+### Create xcframework for a given library
 function build_xcframework() {
 	local FWNAME=$1
 	shift
@@ -190,13 +206,10 @@ function build_xcframework() {
 	done
 
 	cd $REPO_ROOT
-	copy_modulemap
 	xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output $FWNAME.xcframework
-	# tar -cJf $FWNAME.xcframework.tar.xz $FWNAME.xcframework
 }
 
-AVAILABLE_PLATFORMS=(iphoneos iphonesimulator maccatalyst)
-AVAILABLE_FRAMEWORKS=(libpcre openssl libssh2 libgit2)
+### Build all frameworks for every available platforms
 
 for p in ${AVAILABLE_PLATFORMS[@]}; do
 	build_libpcre $p
@@ -208,3 +221,5 @@ done
 for fw in ${AVAILABLE_FRAMEWORKS[@]}; do
 	build_xcframework $fw ${AVAILABLE_PLATFORMS[@]}
 done
+
+copy_modulemap
