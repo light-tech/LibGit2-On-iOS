@@ -202,7 +202,7 @@ function build_xcframework() {
 	echo "Building" $FWNAME "XCFramework containing" ${PLATFORMS[@]}
 
 	for p in ${PLATFORMS[@]}; do
-		FRAMEWORKS_ARGS+=("-library" "install/$p/lib/$FWNAME.a" "-headers" "install/$p/include")
+		FRAMEWORKS_ARGS+=("-library" "install/$p/$FWNAME.a" "-headers" "install/$p/include")
 	done
 
 	cd $REPO_ROOT
@@ -216,10 +216,15 @@ for p in ${AVAILABLE_PLATFORMS[@]}; do
 	build_openssl $p
 	build_libssh2 $p
 	build_libgit2 $p
+
+	# Merge all static libs as libgit2.a
+	cd $REPO_ROOT/install/$p
+	libtool -static -o libgit2.a lib/*.a
 done
 
-for fw in ${AVAILABLE_FRAMEWORKS[@]}; do
-	build_xcframework $fw ${AVAILABLE_PLATFORMS[@]}
-done
+#for fw in ${AVAILABLE_FRAMEWORKS[@]}; do
+#	build_xcframework $fw ${AVAILABLE_PLATFORMS[@]}
+#done
 
+build_xcframework libgit2 ${AVAILABLE_PLATFORMS[@]}
 copy_modulemap

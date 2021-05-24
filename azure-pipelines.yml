@@ -40,22 +40,22 @@ jobs:
   - publish: $(System.DefaultWorkingDirectory)/libpcre.xcframework
     artifact: libpcre.xcframework
     displayName: 'Publish libpcre XCFramework'
-    enabled: true
+    enabled: false
 
   - publish: $(System.DefaultWorkingDirectory)/openssl.xcframework
     artifact: openssl.xcframework
     displayName: 'Publish openssl XCFramework'
-    enabled: true
+    enabled: false
 
   - publish: $(System.DefaultWorkingDirectory)/libssh2.xcframework
     artifact: libssh2.xcframework
     displayName: 'Publish libssh2 XCFramework'
-    enabled: true
+    enabled: false
 
   - publish: $(System.DefaultWorkingDirectory)/install
     artifact: install
     displayName: 'Publish all install files for inspection'
-    enabled: false
+    enabled: true
 
   - publish: $(System.DefaultWorkingDirectory)
     artifact: AllFiles
