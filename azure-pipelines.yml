@@ -28,6 +28,10 @@ jobs:
     continueOnError: false
     enabled: true
 
+  - script: ./compute-checksum.sh
+    displayName: 'Compute checksum'
+    enabled: false
+
   - publish: $(System.DefaultWorkingDirectory)/libgit2.xcframework
     artifact: libgit2.xcframework
     displayName: 'Publish libgit2 XCFramework'
@@ -51,7 +55,7 @@ jobs:
   - publish: $(System.DefaultWorkingDirectory)/install
     artifact: install
     displayName: 'Publish all install files for inspection'
-    enabled: true
+    enabled: false
 
   - publish: $(System.DefaultWorkingDirectory)
     artifact: AllFiles
