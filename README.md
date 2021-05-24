@@ -13,7 +13,7 @@ at the root of this repository.
 
 To test, you can get our iOS example project by cloning
 ```shell
-git clone https://lightech.visualstudio.com/LibGit2-On-iOS/_git/SampleApp
+git clone --recursive https://lightech.visualstudio.com/LibGit2-On-iOS/_git/SampleApp
 ```
 
 The first thing that might have come to your mind is:
