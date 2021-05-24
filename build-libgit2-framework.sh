@@ -61,16 +61,16 @@ function build_libgit2() {
 
 	rm -rf build && mkdir build && cd build
 
-	CMAKE_ARGS+=(-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/libgit2-$PLATFORM \
+	CMAKE_ARGS+=(-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/$PLATFORM \
 		-DBUILD_CLAR=NO)
 
 	# See libgit2/cmake/FindPkgLibraries.cmake to understand how libgit2 looks for libssh2
 	# Basically, setting LIBSSH2_FOUND forces SSH support and since we are building static library,
 	# we only need the headers.
-	CMAKE_ARGS+=(-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/openssl-$PLATFORM \
+	CMAKE_ARGS+=(-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/$PLATFORM \
 		-DUSE_SSH=ON \
 		-DLIBSSH2_FOUND=YES \
-		-DLIBSSH2_INCLUDE_DIRS=$REPO_ROOT/install/libssh2-$PLATFORM)
+		-DLIBSSH2_INCLUDE_DIRS=$REPO_ROOT/install/$PLATFORM/include)
 
 	case $PLATFORM in
 		"iphoneos"|"iphonesimulator")
@@ -93,7 +93,7 @@ function build_libpcre() {
 	cd pcre-8.44
 
 	rm -rf build && mkdir build && cd build
-	CMAKE_ARGS+=(-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/libpcre-$PLATFORM \
+	CMAKE_ARGS+=(-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/$PLATFORM \
 		-DPCRE_BUILD_PCRECPP=NO \
 		-DPCRE_BUILD_PCREGREP=NO \
 		-DPCRE_BUILD_TESTS=NO \
@@ -141,8 +141,8 @@ function build_openssl() {
 	esac
 
 	# See https://wiki.openssl.org/index.php/Compilation_and_Installation
-	./Configure --prefix=$REPO_ROOT/install/openssl-$PLATFORM \
-		--openssldir=$REPO_ROOT/install/openssl-$PLATFORM \
+	./Configure --prefix=$REPO_ROOT/install/$PLATFORM \
+		--openssldir=$REPO_ROOT/install/$PLATFORM \
 		$TARGET_OS no-shared no-dso no-hw no-engine
 
 	make >/dev/null
@@ -150,8 +150,8 @@ function build_openssl() {
 
 	# Merge two static libraries libssl.a and libcrypto.a into a single static library openssl.a
 	# since xcodebuild/XCFramework does not allow multiple static library specification
-	cd $REPO_ROOT/install/openssl-$PLATFORM/lib
-	libtool -static -o openssl.a *.a
+	# cd $REPO_ROOT/install/$PLATFORM/lib
+	# libtool -static -o openssl.a *.a
 }
 
 ### Build libssh2 for a given platform (assume openssl was built)
@@ -165,9 +165,9 @@ function build_libssh2() {
 
 	rm -rf build && mkdir build && cd build
 
-	CMAKE_ARGS+=(-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/libssh2-$PLATFORM \
+	CMAKE_ARGS+=(-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/$PLATFORM \
 		-DCRYPTO_BACKEND=OpenSSL \
-		-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/openssl-$PLATFORM \
+		-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/$PLATFORM \
 		-DBUILD_EXAMPLES=OFF \
 		-DBUILD_TESTING=OFF)
 
@@ -202,7 +202,7 @@ function build_xcframework() {
 	echo "Building" $FWNAME "XCFramework containing" ${PLATFORMS[@]}
 
 	for p in ${PLATFORMS[@]}; do
-		FRAMEWORKS_ARGS+=("-library" "install/$FWNAME-$p/lib/$FWNAME.a" "-headers" "install/$FWNAME-$p/include")
+		FRAMEWORKS_ARGS+=("-library" "install/$p/lib/$FWNAME.a" "-headers" "install/$p/include")
 	done
 
 	cd $REPO_ROOT
