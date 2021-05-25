@@ -22,14 +22,15 @@ function setup_variables() {
 	PLATFORM=$1
 
 	CMAKE_ARGS=(-DBUILD_SHARED_LIBS=NO \
-		-DCMAKE_BUILD_TYPE=Release)
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_C_COMPILER_WORKS=ON \
+		-DCMAKE_CXX_COMPILER_WORKS=ON \
+		-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/$PLATFORM)
 
 	case $PLATFORM in
 		"iphoneos")
 			SYSROOT=`xcodebuild -version -sdk iphoneos Path`
-			CMAKE_ARGS+=(-DCMAKE_C_COMPILER_WORKS=ON \
-				-DCMAKE_CXX_COMPILER_WORKS=ON \
-				-DCMAKE_OSX_ARCHITECTURES=arm64 \
+			CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES=arm64 \
 				-DCMAKE_OSX_SYSROOT=$SYSROOT);;
 
 		"iphonesimulator")
@@ -61,8 +62,7 @@ function build_libgit2() {
 
 	rm -rf build && mkdir build && cd build
 
-	CMAKE_ARGS+=(-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/$PLATFORM \
-		-DBUILD_CLAR=NO)
+	CMAKE_ARGS+=(-DBUILD_CLAR=NO)
 
 	# See libgit2/cmake/FindPkgLibraries.cmake to understand how libgit2 looks for libssh2
 	# Basically, setting LIBSSH2_FOUND forces SSH support and since we are building static library,
@@ -93,8 +93,7 @@ function build_libpcre() {
 	cd pcre-8.44
 
 	rm -rf build && mkdir build && cd build
-	CMAKE_ARGS+=(-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/$PLATFORM \
-		-DPCRE_BUILD_PCRECPP=NO \
+	CMAKE_ARGS+=(-DPCRE_BUILD_PCRECPP=NO \
 		-DPCRE_BUILD_PCREGREP=NO \
 		-DPCRE_BUILD_TESTS=NO \
 		-DPCRE_SUPPORT_LIBBZ2=NO)
@@ -165,8 +164,7 @@ function build_libssh2() {
 
 	rm -rf build && mkdir build && cd build
 
-	CMAKE_ARGS+=(-DCMAKE_INSTALL_PREFIX=$REPO_ROOT/install/$PLATFORM \
-		-DCRYPTO_BACKEND=OpenSSL \
+	CMAKE_ARGS+=(-DCRYPTO_BACKEND=OpenSSL \
 		-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/$PLATFORM \
 		-DBUILD_EXAMPLES=OFF \
 		-DBUILD_TESTING=OFF)
