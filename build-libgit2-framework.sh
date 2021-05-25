@@ -188,7 +188,7 @@ function copy_modulemap() {
 	local FWDIRS=$(find libgit2.xcframework -mindepth 1 -maxdepth 1 -type d)
 	for d in ${FWDIRS[@]}; do
 		echo $d
-		cp module.modulemap $d/Headers/
+		cp libgit2_modulemap $d/Headers/module.modulemap
 	done
 }
 
