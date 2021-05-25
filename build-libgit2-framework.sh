@@ -15,7 +15,11 @@ tar xzf tools.tar.xz
 ###    maccatalyst         (for now implicitly x86_64)
 ### (macos and M1 macos to be added in the future)
 ###
-### After this function is executed, the variable $PLATFORM and $CMAKE_ARGS
+### After this function is executed, the variables
+###    $PLATFORM
+###    $ARCH
+###    $SYSROOT
+###    $CMAKE_ARGS
 ### providing basic/common CMake options will be set.
 function setup_variables() {
 	cd $REPO_ROOT
@@ -29,19 +33,23 @@ function setup_variables() {
 
 	case $PLATFORM in
 		"iphoneos")
+			ARCH=arm64
 			SYSROOT=`xcodebuild -version -sdk iphoneos Path`
-			CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES=arm64 \
+			CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES=$ARCH \
 				-DCMAKE_OSX_SYSROOT=$SYSROOT);;
 
 		"iphonesimulator")
+			ARCH=x86_64
 			SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
 			CMAKE_ARGS+=(-DCMAKE_OSX_SYSROOT=$SYSROOT);;
 
 		"maccatalyst")
+			ARCH=x86_64
 			SYSROOT=`xcodebuild -version -sdk macosx Path`;;
 
 		*)
-			echo "Unsupported or missing platform! Must be one of" ${AVAILABLE_PLATFORMS[@]};;
+			echo "Unsupported or missing platform! Must be one of" ${AVAILABLE_PLATFORMS[@]}
+			exit 1;;
 	esac
 }
 
@@ -121,17 +129,14 @@ function build_openssl() {
 
 	case $PLATFORM in
 		"iphoneos")
-			SYSROOT=`xcodebuild -version -sdk iphoneos Path`
 			TARGET_OS=ios64-cross
 			export CFLAGS="-isysroot $SYSROOT -arch arm64";;
 
 		"iphonesimulator")
-			SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
 			TARGET_OS=iossimulator-xcrun
 			export CFLAGS="-isysroot $SYSROOT";;
 
 		"maccatalyst")
-			SYSROOT=`xcodebuild -version -sdk macosx Path`
 			TARGET_OS=darwin64-x86_64-cc
 			export CFLAGS="-isysroot $SYSROOT -target x86_64-apple-ios14.1-macabi";;
 
