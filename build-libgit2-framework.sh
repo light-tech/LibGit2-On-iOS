@@ -85,7 +85,7 @@ function build_libgit2() {
 			cmake ${CMAKE_ARGS[@]} ..;;
 
 		"maccatalyst")
-			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target x86_64-apple-ios14.1-macabi" ..;;
+			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target $ARCH-apple-ios14.1-macabi" ..;;
 	esac
 
 	cmake --build . --target install
@@ -111,7 +111,7 @@ function build_libpcre() {
 			cmake ${CMAKE_ARGS[@]} ..;;
 
 		"maccatalyst")
-			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target x86_64-apple-ios14.1-macabi" ..;;
+			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target $ARCH-apple-ios14.1-macabi" ..;;
 	esac
 
 	cmake --build . --target install >/dev/null
@@ -130,15 +130,15 @@ function build_openssl() {
 	case $PLATFORM in
 		"iphoneos")
 			TARGET_OS=ios64-cross
-			export CFLAGS="-isysroot $SYSROOT -arch arm64";;
+			export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
 
 		"iphonesimulator")
 			TARGET_OS=iossimulator-xcrun
 			export CFLAGS="-isysroot $SYSROOT";;
 
 		"maccatalyst")
-			TARGET_OS=darwin64-x86_64-cc
-			export CFLAGS="-isysroot $SYSROOT -target x86_64-apple-ios14.1-macabi";;
+			TARGET_OS=darwin64-$ARCH-cc
+			export CFLAGS="-isysroot $SYSROOT -target $ARCH-apple-ios14.1-macabi";;
 
 		*)
 			echo "Unsupported or missing platform!";;
@@ -179,7 +179,7 @@ function build_libssh2() {
 			cmake ${CMAKE_ARGS[@]} ..;;
 
 		"maccatalyst")
-			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target x86_64-apple-ios14.1-macabi" ..;;
+			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target $ARCH-apple-ios14.1-macabi" ..;;
 	esac
 
 	cmake --build . --target install >/dev/null
