@@ -188,7 +188,7 @@ function build_libssh2() {
 ### Copy SwiftGit2's module.modulemap to libgit2.xcframework/*/Headers
 ### so that we can use libgit2.xcframework with SwiftGit2
 function copy_modulemap() {
-	local FWDIRS=$(find libgit2.xcframework -mindepth 1 -maxdepth 1 -type d)
+	local FWDIRS=$(find Clibgit2.xcframework -mindepth 1 -maxdepth 1 -type d)
 	for d in ${FWDIRS[@]}; do
 		echo $d
 		cp libgit2_modulemap $d/Headers/module.modulemap
@@ -209,7 +209,7 @@ function build_xcframework() {
 	done
 
 	cd $REPO_ROOT
-	xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output $FWNAME.xcframework
+	xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output C$FWNAME.xcframework
 }
 
 ### Build all frameworks for every available platforms

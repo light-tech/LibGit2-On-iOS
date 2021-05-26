@@ -32,8 +32,8 @@ jobs:
     displayName: 'Compute checksum'
     enabled: false
 
-  - publish: $(System.DefaultWorkingDirectory)/libgit2.xcframework
-    artifact: libgit2.xcframework
+  - publish: $(System.DefaultWorkingDirectory)/Clibgit2.xcframework
+    artifact: Clibgit2.xcframework
     displayName: 'Publish libgit2 XCFramework'
     enabled: true
 
@@ -55,7 +55,7 @@ jobs:
   - publish: $(System.DefaultWorkingDirectory)/install
     artifact: install
     displayName: 'Publish all install files for inspection'
-    enabled: true
+    enabled: false
 
   - publish: $(System.DefaultWorkingDirectory)
     artifact: AllFiles
