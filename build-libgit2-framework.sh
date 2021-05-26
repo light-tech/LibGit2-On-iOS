@@ -231,3 +231,5 @@ done
 
 build_xcframework libgit2 ${AVAILABLE_PLATFORMS[@]}
 copy_modulemap
+
+zip -r Clibgit2.xcframework.zip Clibgit2.xcframework/

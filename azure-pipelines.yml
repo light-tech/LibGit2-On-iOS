@@ -24,17 +24,17 @@ jobs:
     enabled: false
 
   - script: ./build-libgit2-framework.sh
-    displayName: 'Build LibGit2 Framework from Source'
+    displayName: 'Build LibGit2 XCFramework'
     continueOnError: false
     enabled: true
 
-  - script: ./compute-checksum.sh
-    displayName: 'Compute checksum'
-    enabled: false
+  - script: swift package compute-checksum Clibgit2.xcframework.zip
+    displayName: 'Compute XCFramework Checksum'
+    enabled: true
 
-  - publish: $(System.DefaultWorkingDirectory)/Clibgit2.xcframework
-    artifact: Clibgit2.xcframework
-    displayName: 'Publish libgit2 XCFramework'
+  - publish: $(System.DefaultWorkingDirectory)/Clibgit2.xcframework.zip
+    artifact: Clibgit2
+    displayName: 'Publish LibGit2 XCFramework'
     enabled: true
 
   - publish: $(System.DefaultWorkingDirectory)/libpcre.xcframework

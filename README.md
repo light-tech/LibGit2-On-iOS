@@ -23,3 +23,9 @@ The reasons:
  * Contrary to the first impression, `SwiftGit2` currently [doesn't compiled for iOS](https://github.com/SwiftGit2/SwiftGit2/issues/190) unless one reverts back to an earlier version. The reason is that `libgit2` now depends on `libpcre` which is only supplied in Xcode's MacOS SDK but not iOS SDK; hence we will run into missing symbols `pcre_*****` when using it in an iOS app.
  * `SwiftGit2` isn't very actively maintained. It still uses the older fat binary (which cannot support MacOS, Mac Catalyst and iPhone Simulator simultaneously since all 3 have the same underlying CPU architecture x86_64 but different ABI) instead of switching to XCFramework.
  * We are only aware of [this blog post](https://www.michaelfcollins3.me/posts/2021/01/build-libgit2-for-ios-and-catalyst/) after doing this work. And the post doesn't build `libpcre` which is necessary for many Git features on iOS.
+
+On Windows, we can compute checksum with
+```shell
+# swift package compute-checksum Clibgit2.xcframework.zip
+CertUtil -hashfile Clibgit2.xcframework.zip SHA256
+```
