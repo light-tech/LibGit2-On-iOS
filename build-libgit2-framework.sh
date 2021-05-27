@@ -1,6 +1,16 @@
 export REPO_ROOT=`pwd`
 export PATH=$PATH:$REPO_ROOT/tools/bin
-AVAILABLE_PLATFORMS=(maccatalyst-arm64)  #(iphoneos iphonesimulator maccatalyst)
+
+# There are limitations in `xcodebuild` command that disallow maccatalyst and maccatalyst-arm64
+# to be used simultaneously: One will get an error
+#
+#       Both ios-x86_64-maccatalyst and ios-arm64-maccatalyst represent two equivalent library definitions.
+#
+# in that case. `lipo` is probably needed in this case.
+# Likewise, `maccatalyst` and `macosx` cannot be used together. So probably one will needs multiple
+# xcframeworks for x86_64-based and ARM-based Mac development computer.
+AVAILABLE_PLATFORMS=(iphoneos iphonesimulator maccatalyst) #  maccatalyst-arm64 macosx macosx-arm64)
+
 AVAILABLE_FRAMEWORKS=(libpcre openssl libssh2 libgit2)
 
 # Download build tools
@@ -10,10 +20,10 @@ tar xzf tools.tar.xz
 ### Setup common environment variables to run CMake for a given platform
 ### Usage:      setup_variables PLATFORM
 ### where PLATFORM is the platform to build for and should be one of
-###    iphoneos            (for now implicitly arm64)
-###    iphonesimulator     (for now implicitly x86_64)
-###    maccatalyst         (for now implicitly x86_64)
-### (macos and M1 macos to be added in the future)
+###    iphoneos            (implicitly arm64)
+###    iphonesimulator     (implicitly x86_64)
+###    maccatalyst, maccatalyst-arm64
+###    macosx, macosx-arm64
 ###
 ### After this function is executed, the variables
 ###    $PLATFORM
@@ -52,6 +62,15 @@ function setup_variables() {
 			ARCH=arm64
 			SYSROOT=`xcodebuild -version -sdk macosx Path`
 			CMAKE_ARGS+=(-DCMAKE_C_FLAGS=-target\ $ARCH-apple-ios14.1-macabi);;
+
+		"macosx")
+			ARCH=x86_64
+			SYSROOT=`xcodebuild -version -sdk macosx Path`;;
+
+		"macosx-arm64")
+			ARCH=arm64
+			SYSROOT=`xcodebuild -version -sdk macosx Path`
+			CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES=$ARCH);;
 
 		*)
 			echo "Unsupported or missing platform! Must be one of" ${AVAILABLE_PLATFORMS[@]}
@@ -136,6 +155,10 @@ function build_openssl() {
 			TARGET_OS=darwin64-$ARCH-cc
 			export CFLAGS="-isysroot $SYSROOT -target $ARCH-apple-ios14.1-macabi";;
 
+		"macosx"|"macosx-arm64")
+			TARGET_OS=darwin64-$ARCH-cc
+			export CFLAGS="-isysroot $SYSROOT";;
+
 		*)
 			echo "Unsupported or missing platform!";;
 	esac
@@ -214,7 +237,7 @@ done
 #	build_xcframework $fw ${AVAILABLE_PLATFORMS[@]}
 #done
 
-#build_xcframework libgit2 ${AVAILABLE_PLATFORMS[@]}
-#copy_modulemap
+build_xcframework libgit2 ${AVAILABLE_PLATFORMS[@]}
+copy_modulemap
 
-#zip -r Clibgit2.xcframework.zip Clibgit2.xcframework/
+zip -r Clibgit2.xcframework.zip Clibgit2.xcframework/
