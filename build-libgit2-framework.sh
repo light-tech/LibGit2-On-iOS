@@ -45,14 +45,13 @@ function setup_variables() {
 
 		"maccatalyst")
 			ARCH=x86_64
-			# We would like to append
-			#    -DCMAKE_C_FLAGS="-target $ARCH-apple-ios14.1-macabi"
-			# to CMAKE_ARGS but that won't work due to the space!
-			SYSROOT=`xcodebuild -version -sdk macosx Path`;;
+			SYSROOT=`xcodebuild -version -sdk macosx Path`
+			CMAKE_ARGS+=(-DCMAKE_C_FLAGS=-target\ $ARCH-apple-ios14.1-macabi);;
 
 		"maccatalyst-arm64")
 			ARCH=arm64
-			SYSROOT=`xcodebuild -version -sdk macosx Path`;;
+			SYSROOT=`xcodebuild -version -sdk macosx Path`
+			CMAKE_ARGS+=(-DCMAKE_C_FLAGS=-target\ $ARCH-apple-ios14.1-macabi);;
 
 		*)
 			echo "Unsupported or missing platform! Must be one of" ${AVAILABLE_PLATFORMS[@]}
@@ -87,15 +86,11 @@ function build_libgit2() {
 		-DLIBSSH2_FOUND=YES \
 		-DLIBSSH2_INCLUDE_DIRS=$REPO_ROOT/install/$PLATFORM/include)
 
-	case $PLATFORM in
-		"iphoneos"|"iphonesimulator")
-			cmake ${CMAKE_ARGS[@]} ..;;
+	# Must add "" around ${CMAKE_ARGS[@]} since the array element can have space!
+	# See https://stackoverflow.com/questions/9084257/bash-array-with-spaces-in-elements
+	cmake "${CMAKE_ARGS[@]}" ..
 
-		"maccatalyst"|"maccatalyst-arm64")
-			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target $ARCH-apple-ios14.1-macabi" ..;;
-	esac
-
-	cmake --build . --target install
+	cmake --build . --target install >/dev/null
 }
 
 ### Build libpcre for a given platform
@@ -113,13 +108,7 @@ function build_libpcre() {
 		-DPCRE_BUILD_TESTS=NO \
 		-DPCRE_SUPPORT_LIBBZ2=NO)
 
-	case $PLATFORM in
-		"iphoneos"|"iphonesimulator")
-			cmake ${CMAKE_ARGS[@]} ..;;
-
-		"maccatalyst"|"maccatalyst-arm64")
-			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target $ARCH-apple-ios14.1-macabi" ..;;
-	esac
+	cmake "${CMAKE_ARGS[@]}" ..
 
 	cmake --build . --target install >/dev/null
 }
@@ -176,13 +165,7 @@ function build_libssh2() {
 		-DBUILD_EXAMPLES=OFF \
 		-DBUILD_TESTING=OFF)
 
-	case $PLATFORM in
-		"iphoneos"|"iphonesimulator")
-			cmake ${CMAKE_ARGS[@]} ..;;
-
-		"maccatalyst"|"maccatalyst-arm64")
-			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target $ARCH-apple-ios14.1-macabi" ..;;
-	esac
+	cmake "${CMAKE_ARGS[@]}" ..
 
 	cmake --build . --target install >/dev/null
 }
