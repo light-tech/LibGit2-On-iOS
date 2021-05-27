@@ -151,11 +151,6 @@ function build_openssl() {
 
 	make >/dev/null
 	make install_sw install_ssldirs >/dev/null
-
-	# Merge two static libraries libssl.a and libcrypto.a into a single static library openssl.a
-	# since xcodebuild/XCFramework does not allow multiple static library specification
-	# cd $REPO_ROOT/install/$PLATFORM/lib
-	# libtool -static -o openssl.a *.a
 }
 
 ### Build libssh2 for a given platform (assume openssl was built)
@@ -191,7 +186,7 @@ function copy_modulemap() {
 	local FWDIRS=$(find Clibgit2.xcframework -mindepth 1 -maxdepth 1 -type d)
 	for d in ${FWDIRS[@]}; do
 		echo $d
-		cp libgit2_modulemap $d/Headers/module.modulemap
+		cp Clibgit2_modulemap $d/Headers/module.modulemap
 	done
 }
 
