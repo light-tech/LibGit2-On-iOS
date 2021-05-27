@@ -1,6 +1,6 @@
 export REPO_ROOT=`pwd`
 export PATH=$PATH:$REPO_ROOT/tools/bin
-AVAILABLE_PLATFORMS=(iphoneos iphonesimulator maccatalyst)
+AVAILABLE_PLATFORMS=(maccatalyst-arm64)  #(iphoneos iphonesimulator maccatalyst)
 AVAILABLE_FRAMEWORKS=(libpcre openssl libssh2 libgit2)
 
 # Download build tools
@@ -45,6 +45,13 @@ function setup_variables() {
 
 		"maccatalyst")
 			ARCH=x86_64
+			# We would like to append
+			#    -DCMAKE_C_FLAGS="-target $ARCH-apple-ios14.1-macabi"
+			# to CMAKE_ARGS but that won't work due to the space!
+			SYSROOT=`xcodebuild -version -sdk macosx Path`;;
+
+		"maccatalyst-arm64")
+			ARCH=arm64
 			SYSROOT=`xcodebuild -version -sdk macosx Path`;;
 
 		*)
@@ -84,7 +91,7 @@ function build_libgit2() {
 		"iphoneos"|"iphonesimulator")
 			cmake ${CMAKE_ARGS[@]} ..;;
 
-		"maccatalyst")
+		"maccatalyst"|"maccatalyst-arm64")
 			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target $ARCH-apple-ios14.1-macabi" ..;;
 	esac
 
@@ -110,7 +117,7 @@ function build_libpcre() {
 		"iphoneos"|"iphonesimulator")
 			cmake ${CMAKE_ARGS[@]} ..;;
 
-		"maccatalyst")
+		"maccatalyst"|"maccatalyst-arm64")
 			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target $ARCH-apple-ios14.1-macabi" ..;;
 	esac
 
@@ -136,7 +143,7 @@ function build_openssl() {
 			TARGET_OS=iossimulator-xcrun
 			export CFLAGS="-isysroot $SYSROOT";;
 
-		"maccatalyst")
+		"maccatalyst"|"maccatalyst-arm64")
 			TARGET_OS=darwin64-$ARCH-cc
 			export CFLAGS="-isysroot $SYSROOT -target $ARCH-apple-ios14.1-macabi";;
 
@@ -173,7 +180,7 @@ function build_libssh2() {
 		"iphoneos"|"iphonesimulator")
 			cmake ${CMAKE_ARGS[@]} ..;;
 
-		"maccatalyst")
+		"maccatalyst"|"maccatalyst-arm64")
 			cmake ${CMAKE_ARGS[@]} -DCMAKE_C_FLAGS="-target $ARCH-apple-ios14.1-macabi" ..;;
 	esac
 
@@ -224,7 +231,7 @@ done
 #	build_xcframework $fw ${AVAILABLE_PLATFORMS[@]}
 #done
 
-build_xcframework libgit2 ${AVAILABLE_PLATFORMS[@]}
-copy_modulemap
+#build_xcframework libgit2 ${AVAILABLE_PLATFORMS[@]}
+#copy_modulemap
 
-zip -r Clibgit2.xcframework.zip Clibgit2.xcframework/
+#zip -r Clibgit2.xcframework.zip Clibgit2.xcframework/
