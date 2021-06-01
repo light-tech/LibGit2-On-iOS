@@ -21,15 +21,19 @@ CertUtil -hashfile Clibgit2.xcframework.zip SHA256
 Integration
 -----------
 
-You can download the [prebuilt XCFramework](https://github.com/light-tech/Clibgit2/releases/tag/v1.1.0), extract and add it directly to your Xcode iOS app project. Then simply
+**Method 0**: Interoperate Swift, C/C++ and Objective-C via bridging header as described in our [LLVM-On-iOS project](https://github.com/light-tech/LLVM-On-iOS).
+
+**Method 1**: You can download the [prebuilt XCFramework](https://github.com/light-tech/Clibgit2/releases/tag/v1.1.0), extract and add it directly to your Xcode iOS app project. Then simply
 ```swift
 import Clibgit2
 ```
 and then use the `libgit2` API directly.
+The built XCFramework is also released as a Swift Package at [https://github.com/light-tech/Clibgit2](https://github.com/light-tech/Clibgit2).
+But [be ready](https://theswiftdev.com/how-to-use-c-libraries-in-swift/) to write not-very-Swift-y Swift code.
 
-Alternatively, the built XCFramework is also released as a Swift Package at [https://github.com/light-tech/Clibgit2](https://github.com/light-tech/Clibgit2).
-
-Our recommended way is to use the Swift Package available on the  `spm` branch of [our fork of SwiftGit2](https://github.com/light-tech/SwiftGit2). See the screenshots in our example app below. The downside of this approach is that Xcode might be doing too many refetching.
+**Method 2**: Our recommended way is to use the Swift Package available on the  `spm` branch of [our fork of SwiftGit2](https://github.com/light-tech/SwiftGit2).
+`SwiftGit2` takes care of the not-very-Swift-y Swift code.
+See the screenshots in our example app below.
 
 Example
 -------
