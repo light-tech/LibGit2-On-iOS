@@ -217,7 +217,7 @@ function build_xcframework() {
 	done
 
 	cd $REPO_ROOT
-	xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output C$FWNAME.xcframework
+	xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output $FWNAME.xcframework
 }
 
 ### Build all frameworks for every available platforms
@@ -237,7 +237,11 @@ done
 #	build_xcframework $fw ${AVAILABLE_PLATFORMS[@]}
 #done
 
+# Build raw libgit2 XCFramework for Objective-C usage
 build_xcframework libgit2 ${AVAILABLE_PLATFORMS[@]}
-copy_modulemap
+zip -r libgit2.xcframework.zip libgit2.xcframework/
 
+# Build Clibgit2 XCFramework for use with SwiftGit2
+mv libgit2.xcframework Clibgit2.xcframework
+copy_modulemap
 zip -r Clibgit2.xcframework.zip Clibgit2.xcframework/
