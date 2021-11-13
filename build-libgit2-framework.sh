@@ -118,10 +118,10 @@ function build_libgit2() {
 function build_libpcre() {
 	setup_variables $1
 
-	rm -rf pcre-8.44
-	test -f pcre-8.44.tar.gz || wget https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz # https://ftp.pcre.org/pub/pcre/pcre2-10.36.tar.gz
-	tar xzf pcre-8.44.tar.gz
-	cd pcre-8.44
+	rm -rf pcre-8.45
+	test -f pcre-8.45.tar.gz || wget https://ftp.pcre.org/pub/pcre/pcre-8.45.tar.gz # https://ftp.pcre.org/pub/pcre/pcre2-10.36.tar.gz
+	tar xzf pcre-8.45.tar.gz
+	cd pcre-8.45
 
 	rm -rf build && mkdir build && cd build
 	CMAKE_ARGS+=(-DPCRE_BUILD_PCRECPP=NO \
