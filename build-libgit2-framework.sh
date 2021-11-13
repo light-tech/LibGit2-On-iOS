@@ -9,7 +9,9 @@ export PATH=$PATH:$REPO_ROOT/tools/bin
 # in that case. `lipo` is probably needed in this case.
 # Likewise, `maccatalyst` and `macosx` cannot be used together. So probably one will needs multiple
 # xcframeworks for x86_64-based and ARM-based Mac development computer.
-AVAILABLE_PLATFORMS=(iphoneos iphonesimulator maccatalyst) #  maccatalyst-arm64 macosx macosx-arm64)
+
+# iphoneos maccatalyst
+AVAILABLE_PLATFORMS=(iphonesimulator) #  maccatalyst-arm64 macosx macosx-arm64)
 
 AVAILABLE_FRAMEWORKS=(libpcre openssl libssh2 libgit2)
 
@@ -51,7 +53,7 @@ function setup_variables() {
 		"iphonesimulator")
 			ARCH=x86_64
 			SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
-			CMAKE_ARGS+=(-DCMAKE_OSX_SYSROOT=$SYSROOT);;
+			CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES=$ARCH -DCMAKE_OSX_SYSROOT=$SYSROOT);;
 
 		"maccatalyst")
 			ARCH=x86_64
