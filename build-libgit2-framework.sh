@@ -10,7 +10,8 @@ export PATH=$PATH:$REPO_ROOT/tools/bin
 # Likewise, `maccatalyst` and `macosx` cannot be used together. So probably one will needs multiple
 # xcframeworks for x86_64-based and ARM-based Mac development computer.
 
-AVAILABLE_PLATFORMS=(iphoneos iphonesimulator maccatalyst) #  maccatalyst-arm64 macosx macosx-arm64)
+# iphoneos maccatalyst maccatalyst-arm64 macosx macosx-arm64
+AVAILABLE_PLATFORMS=(iphonesimulator)
 
 AVAILABLE_FRAMEWORKS=(libpcre openssl libssh2 libgit2)
 
@@ -89,10 +90,10 @@ function build_libgit2() {
 	# cd libgit2
 	# git submodule update --recursive
 
-	rm -rf libgit2-1.1.0
-	test -f libgit2-1.1.0.tar.gz || wget https://github.com/libgit2/libgit2/releases/download/v1.1.0/libgit2-1.1.0.tar.gz
-	tar xzf libgit2-1.1.0.tar.gz
-	cd libgit2-1.1.0
+	rm -rf libgit2-1.3.0
+	test -f libgit2-1.3.0.zip || wget https://github.com/libgit2/libgit2/archive/refs/tags/v1.3.0.zip
+	unzip v1.3.0.zip #tar xzf libgit2-1.3.0.tar.gz
+	cd libgit2-1.3.0
 
 	rm -rf build && mkdir build && cd build
 
@@ -119,8 +120,6 @@ function build_libpcre() {
 
 	rm -rf pcre-8.45
 	git clone https://github.com/light-tech/PCRE.git pcre-8.45
-    # wget https://ftp.pcre.org/pub/pcre/pcre-8.45.tar.gz
-    # wget https://ftp.pcre.org/pub/pcre/pcre2-10.36.tar.gz
 	cd pcre-8.45
 
 	rm -rf build && mkdir build && cd build
@@ -139,10 +138,10 @@ function build_openssl() {
 	setup_variables $1
 
 	# It is better to remove and redownload the source since building make the source code directory dirty!
-	rm -rf openssl-OpenSSL_1_1_1k
-	test -f OpenSSL_1_1_1k.tar.gz || wget https://github.com/openssl/openssl/archive/refs/tags/OpenSSL_1_1_1k.tar.gz
-	tar xzf OpenSSL_1_1_1k.tar.gz
-	cd openssl-OpenSSL_1_1_1k
+	rm -rf openssl-3.0.0
+	test -f openssl-3.0.0.tar.gz || wget https://www.openssl.org/source/openssl-3.0.0.tar.gz
+	tar xzf openssl-3.0.0.tar.gz
+	cd openssl-3.0.0
 
 	case $PLATFORM in
 		"iphoneos")
@@ -178,10 +177,10 @@ function build_openssl() {
 function build_libssh2() {
 	setup_variables $1
 
-	rm -rf libssh2-1.9.0
-	test -f libssh2-1.9.0.tar.gz || wget https://github.com/libssh2/libssh2/releases/download/libssh2-1.9.0/libssh2-1.9.0.tar.gz
-	tar xzf libssh2-1.9.0.tar.gz
-	cd libssh2-1.9.0
+	rm -rf libssh2-1.10.0
+	test -f libssh2-1.10.0.tar.gz || wget https://github.com/libssh2/libssh2/releases/download/libssh2-1.10.0/libssh2-1.10.0.tar.gz
+	tar xzf libssh2-1.10.0.tar.gz
+	cd libssh2-1.10.0
 
 	rm -rf build && mkdir build && cd build
 
