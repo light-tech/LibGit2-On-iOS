@@ -39,26 +39,11 @@ jobs:
 
   - script: swift package compute-checksum Clibgit2.xcframework.zip
     displayName: 'Compute Clibgit2 XCFramework Checksum'
-    enabled: true
+    enabled: false
 
   - publish: $(System.DefaultWorkingDirectory)/Clibgit2.xcframework.zip
     artifact: Clibgit2
     displayName: 'Publish Clibgit2 XCFramework'
-    enabled: true
-
-  - publish: $(System.DefaultWorkingDirectory)/libpcre.xcframework
-    artifact: libpcre.xcframework
-    displayName: 'Publish libpcre XCFramework'
-    enabled: false
-
-  - publish: $(System.DefaultWorkingDirectory)/openssl.xcframework
-    artifact: openssl.xcframework
-    displayName: 'Publish openssl XCFramework'
-    enabled: false
-
-  - publish: $(System.DefaultWorkingDirectory)/libssh2.xcframework
-    artifact: libssh2.xcframework
-    displayName: 'Publish libssh2 XCFramework'
     enabled: false
 
   - publish: $(System.DefaultWorkingDirectory)/install
