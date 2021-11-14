@@ -10,8 +10,7 @@ export PATH=$PATH:$REPO_ROOT/tools/bin
 # Likewise, `maccatalyst` and `macosx` cannot be used together. So probably one will needs multiple
 # xcframeworks for x86_64-based and ARM-based Mac development computer.
 
-# iphoneos maccatalyst
-AVAILABLE_PLATFORMS=(iphonesimulator) #  maccatalyst-arm64 macosx macosx-arm64)
+AVAILABLE_PLATFORMS=(iphoneos iphonesimulator maccatalyst) #  maccatalyst-arm64 macosx macosx-arm64)
 
 AVAILABLE_FRAMEWORKS=(libpcre openssl libssh2 libgit2)
 

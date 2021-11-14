@@ -10,7 +10,7 @@ jobs:
 - job: Build_LibGit2
   timeoutInMinutes: 0
   pool:
-    vmImage: macOS-10.15
+    vmImage: macOS-latest
 
   steps:
 
