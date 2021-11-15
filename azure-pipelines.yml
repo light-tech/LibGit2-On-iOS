@@ -39,12 +39,12 @@ jobs:
 
   - script: swift package compute-checksum Clibgit2.xcframework.zip
     displayName: 'Compute Clibgit2 XCFramework Checksum'
-    enabled: false
+    enabled: true
 
   - publish: $(System.DefaultWorkingDirectory)/Clibgit2.xcframework.zip
     artifact: Clibgit2
     displayName: 'Publish Clibgit2 XCFramework'
-    enabled: false
+    enabled: true
 
   - publish: $(System.DefaultWorkingDirectory)/install
     artifact: install

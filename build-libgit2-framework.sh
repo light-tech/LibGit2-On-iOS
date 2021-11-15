@@ -80,40 +80,6 @@ function setup_variables() {
 	esac
 }
 
-### Build libgit2 for a single platform (given as the first and only argument)
-### See @setup_variables for the list of available platform names
-### Assume openssl and libssh2 was built
-function build_libgit2() {
-	setup_variables $1
-
-	# test -d libgit2 || git clone --recursive https://github.com/libgit2/libgit2.git
-	# cd libgit2
-	# git submodule update --recursive
-
-	rm -rf libgit2-1.3.0
-	test -f v1.3.0.zip || wget -q https://github.com/libgit2/libgit2/archive/refs/tags/v1.3.0.zip
-	unzip v1.3.0.zip >/dev/null #tar xzf libgit2-1.3.0.tar.gz
-	cd libgit2-1.3.0
-
-	rm -rf build && mkdir build && cd build
-
-	CMAKE_ARGS+=(-DBUILD_CLAR=NO)
-
-	# See libgit2/cmake/FindPkgLibraries.cmake to understand how libgit2 looks for libssh2
-	# Basically, setting LIBSSH2_FOUND forces SSH support and since we are building static library,
-	# we only need the headers.
-	CMAKE_ARGS+=(-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/$PLATFORM \
-		-DUSE_SSH=ON \
-		-DLIBSSH2_FOUND=YES \
-		-DLIBSSH2_INCLUDE_DIRS=$REPO_ROOT/install/$PLATFORM/include)
-
-	# Must add "" around ${CMAKE_ARGS[@]} since the array element can have space!
-	# See https://stackoverflow.com/questions/9084257/bash-array-with-spaces-in-elements
-	cmake "${CMAKE_ARGS[@]}" .. >/dev/null 2>/dev/null
-
-	cmake --build . --target install >/dev/null 2>/dev/null
-}
-
 ### Build libpcre for a given platform
 function build_libpcre() {
 	setup_variables $1
@@ -178,7 +144,7 @@ function build_libssh2() {
 	setup_variables $1
 
 	rm -rf libssh2-1.10.0
-	test -f libssh2-1.10.0.tar.gz || wget -q https://github.com/libssh2/libssh2/releases/download/libssh2-1.10.0/libssh2-1.10.0.tar.gz
+	test -f libssh2-1.10.0.tar.gz || wget -q https://www.libssh2.org/download/libssh2-1.10.0.tar.gz
 	tar xzf libssh2-1.10.0.tar.gz
 	cd libssh2-1.10.0
 
@@ -194,14 +160,32 @@ function build_libssh2() {
 	cmake --build . --target install >/dev/null 2>/dev/null
 }
 
-### Copy SwiftGit2's module.modulemap to libgit2.xcframework/*/Headers
-### so that we can use libgit2.xcframework with SwiftGit2
-function copy_modulemap() {
-	local FWDIRS=$(find Clibgit2.xcframework -mindepth 1 -maxdepth 1 -type d)
-	for d in ${FWDIRS[@]}; do
-		echo $d
-		cp Clibgit2_modulemap $d/Headers/module.modulemap
-	done
+### Build libgit2 for a single platform (given as the first and only argument)
+### See @setup_variables for the list of available platform names
+### Assume openssl and libssh2 was built
+function build_libgit2() {
+    setup_variables $1
+
+    rm -rf libgit2-1.3.0
+    test -f v1.3.0.zip || wget -q https://github.com/libgit2/libgit2/archive/refs/tags/v1.3.0.zip
+    unzip v1.3.0.zip >/dev/null
+    cd libgit2-1.3.0
+
+    rm -rf build && mkdir build && cd build
+
+    CMAKE_ARGS+=(-DBUILD_CLAR=NO)
+
+    # See libgit2/cmake/FindPkgLibraries.cmake to understand how libgit2 looks for libssh2
+    # Basically, setting LIBSSH2_FOUND forces SSH support and since we are building static library,
+    # we only need the headers.
+    CMAKE_ARGS+=(-DOPENSSL_ROOT_DIR=$REPO_ROOT/install/$PLATFORM \
+        -DUSE_SSH=ON \
+        -DLIBSSH2_FOUND=YES \
+        -DLIBSSH2_INCLUDE_DIRS=$REPO_ROOT/install/$PLATFORM/include)
+
+    cmake "${CMAKE_ARGS[@]}" .. >/dev/null 2>/dev/null
+
+    cmake --build . --target install >/dev/null 2>/dev/null
 }
 
 ### Create xcframework for a given library
@@ -221,22 +205,29 @@ function build_xcframework() {
 	xcodebuild -create-xcframework ${FRAMEWORKS_ARGS[@]} -output $FWNAME.xcframework
 }
 
-### Build all frameworks for every available platforms
+### Copy SwiftGit2's module.modulemap to libgit2.xcframework/*/Headers
+### so that we can use libgit2 C API in Swift (e.g. via SwiftGit2)
+function copy_modulemap() {
+    local FWDIRS=$(find Clibgit2.xcframework -mindepth 1 -maxdepth 1 -type d)
+    for d in ${FWDIRS[@]}; do
+        echo $d
+        cp Clibgit2_modulemap $d/Headers/module.modulemap
+    done
+}
+
+### Build libgit2 and Clibgit2 frameworks for all available platforms
 
 for p in ${AVAILABLE_PLATFORMS[@]}; do
+	echo "Build libraries for $p"
 	build_libpcre $p
 	build_openssl $p
 	build_libssh2 $p
 	build_libgit2 $p
 
-	# Merge all static libs as libgit2.a
+	# Merge all static libs as libgit2.a since xcodebuild doesn't allow specifying multiple .a
 	cd $REPO_ROOT/install/$p
 	libtool -static -o libgit2.a lib/*.a
 done
-
-#for fw in ${AVAILABLE_FRAMEWORKS[@]}; do
-#	build_xcframework $fw ${AVAILABLE_PLATFORMS[@]}
-#done
 
 # Build raw libgit2 XCFramework for Objective-C usage
 build_xcframework libgit2 ${AVAILABLE_PLATFORMS[@]}
