@@ -10,10 +10,8 @@ export PATH=$PATH:$REPO_ROOT/tools/bin
 # Likewise, `maccatalyst` and `macosx` cannot be used together. So unfortunately for now, one will
 # needs multiple xcframeworks for x86_64-based and ARM-based Mac development computer.
 
-# Note that iphonesimulator MUST be built first before other platform for otherwise, the lib built
-# somehow contains both x86_64 and arm64 binary leading to undefined symbols error!?
 # maccatalyst-arm64 macosx macosx-arm64
-AVAILABLE_PLATFORMS=(iphonesimulator iphoneos maccatalyst)
+AVAILABLE_PLATFORMS=(iphoneos iphonesimulator maccatalyst)
 
 # Download build tools
 test -d tools || wget -q https://github.com/light-tech/LLVM-On-iOS/releases/download/llvm12.0.0/tools.tar.xz
@@ -158,6 +156,7 @@ function build_libssh2() {
 	cmake "${CMAKE_ARGS[@]}" .. >/dev/null 2>/dev/null
 
 	cmake --build . --target install >/dev/null 2>/dev/null
+	export -n CFLAGS
 }
 
 ### Build libgit2 for a single platform (given as the first and only argument)
