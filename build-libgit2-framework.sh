@@ -135,6 +135,7 @@ function build_openssl() {
 
 	make >/dev/null 2>/dev/null
 	make install_sw install_ssldirs >/dev/null 2>/dev/null
+	export -n CFLAGS
 }
 
 ### Build libssh2 for a given platform (assume openssl was built)
@@ -156,7 +157,6 @@ function build_libssh2() {
 	cmake "${CMAKE_ARGS[@]}" .. >/dev/null 2>/dev/null
 
 	cmake --build . --target install >/dev/null 2>/dev/null
-	export -n CFLAGS
 }
 
 ### Build libgit2 for a single platform (given as the first and only argument)
