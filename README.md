@@ -23,7 +23,9 @@ How To Use
 
 **Method 0**: Interoperate Swift, C/C++ and Objective-C via bridging header as described in our [LLVM-On-iOS project](https://github.com/light-tech/LLVM-On-iOS). You can use `libgit2.xcframework` if you want to use our [prebuilt](https://github.com/light-tech/LibGit2-On-iOS/releases).
 
-This method is crystallized in [our new Swift package MiniGit](https://github.com/light-tech/MiniGit).
+This method is crystallized in [our new Swift package MiniGit](https://github.com/light-tech/MiniGit) and is **our recommended way**.
+
+See the screenshots in our example app below.
 
 **Method 1**: You can download our [prebuilt XCFramework](https://github.com/light-tech/LibGit2-On-iOS/releases), extract and add it directly to your Xcode iOS app project. For this method, you will need the `Clibgit2.xcframework` which exposes the module to Swift. Then simply
 ```swift
@@ -33,9 +35,10 @@ and then use the `libgit2` **C API** directly.
 The built XCFramework is also released as a Swift Package at [https://github.com/light-tech/Clibgit2](https://github.com/light-tech/Clibgit2).
 But since libgit2 is a C library, [be ready](https://theswiftdev.com/how-to-use-c-libraries-in-swift/) to write some not-very-Swift-y Swift code. See also the [official documentation](https://github.com/apple/swift/blob/main/docs/HowSwiftImportsCAPIs.md).
 
-**Method 2**: Our recommended way is to use the Swift Package available on the  `spm` branch of [our fork of SwiftGit2](https://github.com/light-tech/SwiftGit2).
+**Method 2**: You can use the Swift Package available on the  `spm` branch of [our fork of SwiftGit2](https://github.com/light-tech/SwiftGit2).
 Basically, `SwiftGit2` takes care of the not-very-Swift-y Swift code in method 1.
-See the screenshots in our example app below.
+However, it is missing a lot of Git features such as `git push` so if you need them, you have to write those not-very-Swift-y Swift code yourself as in method 1.
+Thus, we now recommend method 0 as it is best to write C code in C and not Swift's emulation.
 
 Known Issues
 ------------
@@ -45,9 +48,9 @@ Our prebuilt XCFrameworks can only be used on Intel Macs when building for iOS s
 Example
 -------
 
-To test, you can get [our iOS example app project](https://github.com/light-tech/SwiftGit2-SampleApp) by cloning
+To test, you can get [our iOS example app project](https://github.com/light-tech/MiniGit-SampleApp) by cloning
 ```shell
-git clone https://github.com/light-tech/SwiftGit2-SampleApp.git
+git clone https://github.com/light-tech/MiniGit-SampleApp.git
 ```
 
 Why?
