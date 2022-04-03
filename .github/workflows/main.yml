@@ -1,0 +1,9 @@
+name: Build
+on: [push]
+jobs:
+  build-libgit2-xcframework:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: echo "Hello, world"
+
