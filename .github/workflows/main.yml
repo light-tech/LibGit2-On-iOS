@@ -1,4 +1,4 @@
-name: Build
+name: Build libgit2 XCFrameworks for release
 on: [push]
 jobs:
   build-libgit2-xcframework:
@@ -7,8 +7,14 @@ jobs:
       - uses: actions/checkout@v3
       - run: ./build-tools.sh
       - run: ./build-libgit2-framework.sh
+      - run: swift package compute-checksum libgit2.xcframework.zip
+      - run: swift package compute-checksum Clibgit2.xcframework.zip
       - uses: actions/upload-artifact@v3
         with:
           name: libgit2.xcframework
           path: libgit2.xcframework.zip
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Clibgit2.xcframework
+          path: Clibgit2.xcframework.zip
 
