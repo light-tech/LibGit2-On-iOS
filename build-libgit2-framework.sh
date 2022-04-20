@@ -11,7 +11,11 @@ export PATH=$PATH:$REPO_ROOT/tools/bin
 # needs multiple xcframeworks for x86_64-based and ARM-based Mac development computer.
 
 # maccatalyst-arm64 macosx macosx-arm64
+if [[ $(arch) == 'arm64' ]]; then
+AVAILABLE_PLATFORMS=(iphoneos iphonesimulator maccatalyst-arm64)
+else
 AVAILABLE_PLATFORMS=(iphoneos iphonesimulator maccatalyst)
+fi
 
 # Download build tools
 test -d tools || wget -q https://github.com/light-tech/LLVM-On-iOS/releases/download/llvm12.0.0/tools.tar.xz
@@ -49,7 +53,7 @@ function setup_variables() {
 				-DCMAKE_OSX_SYSROOT=$SYSROOT);;
 
 		"iphonesimulator")
-			ARCH=x86_64
+			ARCH=$(arch)
 			SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
 			CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES=$ARCH -DCMAKE_OSX_SYSROOT=$SYSROOT);;
 
@@ -167,7 +171,7 @@ function build_libgit2() {
 
     rm -rf libgit2-1.3.0
     test -f v1.3.0.zip || wget -q https://github.com/libgit2/libgit2/archive/refs/tags/v1.3.0.zip
-    unzip v1.3.0.zip >/dev/null
+    ditto -V -x -k --sequesterRsrc --rsrc v1.3.0.zip ./
     cd libgit2-1.3.0
 
     rm -rf build && mkdir build && cd build
