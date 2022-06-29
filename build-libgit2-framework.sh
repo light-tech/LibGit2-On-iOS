@@ -11,11 +11,11 @@ export PATH=$PATH:$REPO_ROOT/tools/bin
 # needs multiple xcframeworks for x86_64-based and ARM-based Mac development computer.
 
 # maccatalyst-arm64 macosx macosx-arm64
-if [[ $(arch) == 'arm64' ]]; then
-AVAILABLE_PLATFORMS=(iphoneos iphonesimulator maccatalyst-arm64)
-else
-AVAILABLE_PLATFORMS=(iphoneos iphonesimulator maccatalyst)
-fi
+#if [[ $(arch) == 'arm64' ]]; then
+AVAILABLE_PLATFORMS=(iphoneos iphonesimulator-arm64 maccatalyst-arm64)
+#else
+#AVAILABLE_PLATFORMS=(iphoneos iphonesimulator maccatalyst)
+#fi
 
 # Download build tools
 test -d tools || wget -q https://github.com/light-tech/LLVM-On-iOS/releases/download/llvm12.0.0/tools.tar.xz
@@ -24,8 +24,8 @@ tar xzf tools.tar.xz
 ### Setup common environment variables to run CMake for a given platform
 ### Usage:      setup_variables PLATFORM
 ### where PLATFORM is the platform to build for and should be one of
-###    iphoneos            (implicitly arm64)
-###    iphonesimulator     (implicitly x86_64)
+###    iphoneos  (implicitly arm64)
+###    iphonesimulator, iphonesimulator-arm64
 ###    maccatalyst, maccatalyst-arm64
 ###    macosx, macosx-arm64
 ###
@@ -53,9 +53,14 @@ function setup_variables() {
 				-DCMAKE_OSX_SYSROOT=$SYSROOT);;
 
 		"iphonesimulator")
-			ARCH=$(arch)
+			ARCH=x86_64
 			SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
 			CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES=$ARCH -DCMAKE_OSX_SYSROOT=$SYSROOT);;
+
+        "iphonesimulator-arm64")
+            ARCH=arm64
+            SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
+            CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES=$ARCH -DCMAKE_OSX_SYSROOT=$SYSROOT);;
 
 		"maccatalyst")
 			ARCH=x86_64
@@ -116,7 +121,7 @@ function build_openssl() {
 			TARGET_OS=ios64-cross
 			export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
 
-		"iphonesimulator")
+		"iphonesimulator"|"iphonesimulator-arm64")
 			TARGET_OS=iossimulator-xcrun
 			export CFLAGS="-isysroot $SYSROOT";;
 
