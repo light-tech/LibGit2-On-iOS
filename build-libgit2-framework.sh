@@ -1,21 +1,15 @@
 export REPO_ROOT=`pwd`
 export PATH=$PATH:$REPO_ROOT/tools/bin
 
-# There are limitations in `xcodebuild` command that disallow maccatalyst and maccatalyst-arm64
-# to be used simultaneously: Doing that and we will get an error
-#
-#   Both ios-x86_64-maccatalyst and ios-arm64-maccatalyst represent two equivalent library definitions.
-#
-# To provide binary for both, `lipo` is probably needed.
-# Likewise, `maccatalyst` and `macosx` cannot be used together. So unfortunately for now, one will
-# needs multiple xcframeworks for x86_64-based and ARM-based Mac development computer.
+# List of platforms-architecture that we support
+# Note that there are limitations in `xcodebuild` command that disallows `maccatalyst` and `macosx` (native macOS lib) in the same xcframework.
+AVAILABLE_PLATFORMS=(iphoneos iphonesimulator iphonesimulator-arm64 maccatalyst maccatalyst-arm64) # macosx macosx-arm64
 
-# maccatalyst-arm64 macosx macosx-arm64
-#if [[ $(arch) == 'arm64' ]]; then
-AVAILABLE_PLATFORMS=(iphoneos iphonesimulator-arm64 maccatalyst-arm64)
-#else
-#AVAILABLE_PLATFORMS=(iphoneos iphonesimulator maccatalyst)
-#fi
+# List of frameworks included in the XCFramework (= AVAILABLE_PLATFORMS without architecture specifications)
+XCFRAMEWORK_PLATFORMS=(iphoneos iphonesimulator maccatalyst)
+
+# List of platforms that need to be merged using lipo due to presence of multiple architectures
+LIPO_PLATFORMS=(iphonesimulator maccatalyst)
 
 # Download build tools
 test -d tools || wget -q https://github.com/light-tech/LLVM-On-iOS/releases/download/llvm12.0.0/tools.tar.xz
@@ -57,10 +51,10 @@ function setup_variables() {
 			SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
 			CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES=$ARCH -DCMAKE_OSX_SYSROOT=$SYSROOT);;
 
-        "iphonesimulator-arm64")
-            ARCH=arm64
-            SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
-            CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES=$ARCH -DCMAKE_OSX_SYSROOT=$SYSROOT);;
+		"iphonesimulator-arm64")
+			ARCH=arm64
+			SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
+			CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES=$ARCH -DCMAKE_OSX_SYSROOT=$SYSROOT);;
 
 		"maccatalyst")
 			ARCH=x86_64
@@ -123,7 +117,7 @@ function build_openssl() {
 
 		"iphonesimulator"|"iphonesimulator-arm64")
 			TARGET_OS=iossimulator-xcrun
-			export CFLAGS="-isysroot $SYSROOT";;
+			export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
 
 		"maccatalyst"|"maccatalyst-arm64")
 			TARGET_OS=darwin64-$ARCH-cc
@@ -237,8 +231,15 @@ for p in ${AVAILABLE_PLATFORMS[@]}; do
 	libtool -static -o libgit2.a lib/*.a
 done
 
+# Merge the libgit2.a for iphonesimulator & iphonesimulator-arm64 as well as maccatalyst & maccatalyst-arm64 using lipo
+for p in ${LIPO_PLATFORMS[@]}; do
+    cd $REPO_ROOT/install/$p
+    lipo libgit2.a ../$p-arm64/libgit2.a -output libgit2_all_archs.a -create
+    test -f libgit2_all_archs.a && rm libgit2.a && mv libgit2_all_archs.a libgit2.a
+done
+
 # Build raw libgit2 XCFramework for Objective-C usage
-build_xcframework libgit2 ${AVAILABLE_PLATFORMS[@]}
+build_xcframework libgit2 ${XCFRAMEWORK_PLATFORMS[@]}
 zip -r libgit2.xcframework.zip libgit2.xcframework/
 
 # Build Clibgit2 XCFramework for use with SwiftGit2

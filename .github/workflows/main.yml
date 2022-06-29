@@ -1,5 +1,6 @@
 name: Build libgit2 XCFrameworks for release
 on: [push]
+# on: workflow_dispatch
 jobs:
   build-libgit2-xcframework:
     runs-on: macos-latest
