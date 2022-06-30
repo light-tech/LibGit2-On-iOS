@@ -1,3 +1,10 @@
+# Build libgit2 XCFramework
+#
+# This script assumes that
+#  1. it is run at the root of the repo
+#  2. the required tools (wget, ninja, cmake, autotools) are installed either globally via homebrew or locally in tools/bin using our other script build_tools.sh
+#
+
 export REPO_ROOT=`pwd`
 export PATH=$PATH:$REPO_ROOT/tools/bin
 
@@ -10,10 +17,6 @@ XCFRAMEWORK_PLATFORMS=(iphoneos iphonesimulator maccatalyst)
 
 # List of platforms that need to be merged using lipo due to presence of multiple architectures
 LIPO_PLATFORMS=(iphonesimulator maccatalyst)
-
-# Download build tools
-test -d tools || wget -q https://github.com/light-tech/LLVM-On-iOS/releases/download/llvm12.0.0/tools.tar.xz
-tar xzf tools.tar.xz
 
 ### Setup common environment variables to run CMake for a given platform
 ### Usage:      setup_variables PLATFORM
