@@ -173,7 +173,7 @@ function build_libgit2() {
 
     rm -rf libgit2-1.4.3
     test -f v1.4.3.zip || wget -q https://github.com/libgit2/libgit2/archive/refs/tags/v1.4.3.zip
-    ditto -V -x -k --sequesterRsrc --rsrc v1.4.3.zip ./
+    ditto -V -x -k --sequesterRsrc --rsrc v1.4.3.zip ./ >/dev/null 2>/dev/null
     cd libgit2-1.4.3
 
     rm -rf build && mkdir build && cd build
@@ -188,9 +188,9 @@ function build_libgit2() {
         -DLIBSSH2_FOUND=YES \
         -DLIBSSH2_INCLUDE_DIRS=$REPO_ROOT/install/$PLATFORM/include)
 
-    cmake "${CMAKE_ARGS[@]}" .. >/dev/null 2>/dev/null
+    cmake "${CMAKE_ARGS[@]}" .. #>/dev/null 2>/dev/null
 
-    cmake --build . --target install >/dev/null 2>/dev/null
+    cmake --build . --target install #>/dev/null 2>/dev/null
 }
 
 ### Create xcframework for a given library
