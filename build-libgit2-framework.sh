@@ -171,10 +171,10 @@ function build_libssh2() {
 function build_libgit2() {
     setup_variables $1
 
-    rm -rf libgit2-1.4.3
-    test -f v1.4.3.zip || wget -q https://github.com/libgit2/libgit2/archive/refs/tags/v1.4.3.zip
-    ditto -V -x -k --sequesterRsrc --rsrc v1.4.3.zip ./ >/dev/null 2>/dev/null
-    cd libgit2-1.4.3
+    rm -rf libgit2-1.3.1
+    test -f v1.3.1.zip || wget -q https://github.com/libgit2/libgit2/archive/refs/tags/v1.3.1.zip
+    ditto -V -x -k --sequesterRsrc --rsrc v1.3.1.zip ./ >/dev/null 2>/dev/null
+    cd libgit2-1.3.1
 
     rm -rf build && mkdir build && cd build
 
