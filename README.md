@@ -36,11 +36,6 @@ Basically, `SwiftGit2` takes care of the not-very-Swift-y Swift code in method 1
 However, it is missing a lot of Git features such as `git push` so if you need them, you have to write those not-very-Swift-y Swift code yourself as in method 1.
 Thus, we now recommend method 0 as it is best to write C code in C and not Swift's emulation.
 
-Known Issues
-------------
-
-Our prebuilt XCFrameworks can only be used on Intel Macs when building for iOS simulator or Mac Catalyst.
-
 Example
 -------
 
