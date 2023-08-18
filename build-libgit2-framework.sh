@@ -18,6 +18,8 @@ XCFRAMEWORK_PLATFORMS=(iphoneos iphonesimulator maccatalyst)
 # List of platforms that need to be merged using lipo due to presence of multiple architectures
 LIPO_PLATFORMS=(iphonesimulator maccatalyst)
 
+MIN_IOS_VERSION="13.0"
+MIN_MAC_VERSION="10.11"
 ### Setup common environment variables to run CMake for a given platform
 ### Usage:      setup_variables PLATFORM
 ### where PLATFORM is the platform to build for and should be one of
@@ -116,11 +118,11 @@ function build_openssl() {
 	case $PLATFORM in
 		"iphoneos")
 			TARGET_OS=ios64-cross
-			export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
+			export CFLAGS="-isysroot $SYSROOT -arch $ARCH -mios-simulator-version-min=$MIN_IOS_VERSION";;
 
 		"iphonesimulator"|"iphonesimulator-arm64")
 			TARGET_OS=iossimulator-xcrun
-			export CFLAGS="-isysroot $SYSROOT -arch $ARCH";;
+			export CFLAGS="-isysroot $SYSROOT -arch $ARCH -miphoneos-version-min=$MIN_IOS_VERSION";;
 
 		"maccatalyst"|"maccatalyst-arm64")
 			TARGET_OS=darwin64-$ARCH-cc
@@ -128,7 +130,7 @@ function build_openssl() {
 
 		"macosx"|"macosx-arm64")
 			TARGET_OS=darwin64-$ARCH-cc
-			export CFLAGS="-isysroot $SYSROOT";;
+			export CFLAGS="-isysroot $SYSROOT -mmacos-version-min=$MIN_MAC_VERSION";;
 
 		*)
 			echo "Unsupported or missing platform!";;
