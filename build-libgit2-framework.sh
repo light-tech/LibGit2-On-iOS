@@ -108,10 +108,10 @@ function build_openssl() {
 	setup_variables $1
 
 	# It is better to remove and redownload the source since building make the source code directory dirty!
-	rm -rf openssl-3.0.4
-	test -f openssl-3.0.4.tar.gz || wget -q https://www.openssl.org/source/openssl-3.0.4.tar.gz
-	tar xzf openssl-3.0.4.tar.gz
-	cd openssl-3.0.4
+	rm -rf openssl-3.0.15
+	test -f openssl-3.0.15.tar.gz || wget -q https://www.openssl.org/source/openssl-3.0.15.tar.gz
+	tar xzf openssl-3.0.15.tar.gz
+	cd openssl-3.0.15
 
 	case $PLATFORM in
 		"iphoneos")
@@ -148,10 +148,10 @@ function build_openssl() {
 function build_libssh2() {
 	setup_variables $1
 
-	rm -rf libssh2-1.10.0
-	test -f libssh2-1.10.0.tar.gz || wget -q https://www.libssh2.org/download/libssh2-1.10.0.tar.gz
-	tar xzf libssh2-1.10.0.tar.gz
-	cd libssh2-1.10.0
+	rm -rf libssh2-1.11.1
+	test -f libssh2-1.11.1.tar.gz || wget -q https://www.libssh2.org/download/libssh2-1.11.1.tar.gz
+	tar xzf libssh2-1.11.1.tar.gz
+	cd libssh2-1.11.1
 
 	rm -rf build && mkdir build && cd build
 
@@ -171,10 +171,10 @@ function build_libssh2() {
 function build_libgit2() {
     setup_variables $1
 
-    rm -rf libgit2-1.3.1
-    test -f v1.3.1.zip || wget -q https://github.com/libgit2/libgit2/archive/refs/tags/v1.3.1.zip
-    ditto -V -x -k --sequesterRsrc --rsrc v1.3.1.zip ./ >/dev/null 2>/dev/null
-    cd libgit2-1.3.1
+    rm -rf libgit2-1.9.0
+    test -f v1.9.0.zip || wget -q https://github.com/libgit2/libgit2/archive/refs/tags/v1.9.0.zip
+    ditto -V -x -k --sequesterRsrc --rsrc v1.9.0.zip ./ >/dev/null 2>/dev/null
+    cd libgit2-1.9.0
 
     rm -rf build && mkdir build && cd build
 
